@@ -1,0 +1,43 @@
+import type { ProductOption } from "../types/product";
+
+export const ingredientesSalados: ProductOption[] = [
+  { id: "pina", name: "Piña", price: 0 },
+  { id: "sandia", name: "Sandía", price: 0 },
+  { id: "melon", name: "Melón", price: 0 },
+  { id: "mango", name: "Mango", price: 0 },
+  { id: "jicama", name: "Jícama", price: 0 },
+  { id: "zanahoria", name: "Zanahoria", price: 0 },
+  { id: "uvas", name: "Uvas", price: 0 },
+  { id: "fresas", name: "Fresas", price: 0 },
+  { id: "pepino", name: "Pepino", price: 0 },
+  { id: "manzana", name: "Manzana", price: 0 },
+  { id: "skwinkles", name: "Skwinkles", price: 0 },
+  { id: "mangomita", name: "Mangomita", price: 0 },
+  { id: "tamborcito", name: "Tamborcito", price: 0 },
+  { id: "pulparindo", name: "Pulparindo", price: 0 },
+  { id: "lucas-gusano", name: "Lucas Gusano", price: 0 },
+  { id: "chetos-flaming-hot", name: "Chetos Flaming Hot", price: 0 },
+  { id: "cacahuate-natural", name: "Cacahuate natural", price: 0 },
+  { id: "cacahuate-enchilado", name: "Cacahuate enchilado", price: 0 },
+  { id: "paleta-gomita-sandia", name: "Paleta de gomita sabor sandía", price: 0 },
+  { id: "zumba-goma-mango", name: "Zumba Goma mango", price: 0 },
+  { id: "zumba-goma-sandia", name: "Zumba Goma sandía", price: 0 },
+  { id: "zumba-goma-mora", name: "Zumba Goma mora", price: 0 },
+  { id: "pelon", name: "Pelón", price: 0 },
+  { id: "tilicos", name: "Tilicos", price: 0 },
+  { id: "cueritos", name: "Cueritos", price: 0 },
+  { id: "panditas", name: "Panditas", price: 0 },
+  { id: "lombrices", name: "Lombrices", price: 0 },
+  { id: "picafresa", name: "Picafresa", price: 0 },
+  { id: "tajin", name: "Tajín", price: 0 },
+  { id: "limon", name: "Limón", price: 0 },
+  { id: "chamoy", name: "Chamoy", price: 0 },
+  { id: "miguelito", name: "Miguelito", price: 0 },
+  { id: "salsa-maggy", name: "Salsa Maggy", price: 0 },
+  { id: "salsa-inglesa", name: "Salsa Inglesa", price: 0 },
+  { id: "salsa-botanera", name: "Salsa Botanera", price: 0 },
+];
+
+export const gomitas: ProductOption[] = ingredientesSalados.filter((item) =>
+  ["mangomita", "paleta-gomita-sandia", "panditas", "lombrices", "picafresa"].includes(item.id),
+);
