@@ -24,7 +24,7 @@ const steps = [
   },
   {
     title: "Comparte tu ubicación",
-    text: "Elige envío a domicilio o Pick up para recoger.",
+    text: "Confirma con nosotros el costo exacto de envío.",
     Icon: MapPin,
   },
   {

@@ -34,20 +34,12 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const baseMessage = buildOrderMessage(items, subtotal, discount, total);
 
-  const isPickup = selectedZone?.id === "pickup";
-
   const finalMessage = [
     baseMessage,
     "",
-    isPickup
-      ? "Método de entrega: Pick up · Recoger en el local"
-      : `Zona de envío: ${selectedZone?.zone ?? "No seleccionada"}`,
-    isPickup
-      ? "El cliente recogerá su pedido en el local."
-      : "El cliente enviará su ubicación por WhatsApp.",
-    isPickup
-      ? "Costo de envío: $0"
-      : "Costo de envío pendiente de confirmación.",
+    `Zona de envío: ${selectedZone?.zone ?? "No seleccionada"}`,
+    "El cliente enviará su ubicación por WhatsApp.",
+    "Costo de envío pendiente de confirmación.",
   ].join("\n");
 
   return (
@@ -176,11 +168,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
                 <h3 className="font-black text-slate-900">
-                  ¿Cómo quieres recibir tu pedido?
+                  Selecciona tu zona
                 </h3>
 
                 <p className="mt-1 text-sm text-slate-600">
-                  Elige Pick up para recogerlo o selecciona tu zona para envío.
+                  Después envía tu ubicación por WhatsApp para confirmar el costo.
                 </p>
 
                 <select
@@ -190,7 +182,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   }
                   className="mt-3 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none"
                 >
-                  <option value="">Selecciona una opción</option>
+                  <option value="">Selecciona tu zona</option>
 
                   {shippingZones.map((zone) => (
                     <option key={zone.id} value={zone.id}>
@@ -217,10 +209,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               )}
 
               <div className="flex justify-between">
-                <span>Entrega</span>
-                <strong>
-                  {selectedZone?.id === "pickup" ? "Pick up · Sin costo" : "Envío pendiente"}
-                </strong>
+                <span>Envío</span>
+                <strong>Pendiente</strong>
               </div>
 
               <div className="flex justify-between text-xl font-black">
@@ -298,19 +288,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
             <div className="mt-5 space-y-2 rounded-2xl bg-slate-950 p-5 text-white">
               <div className="flex justify-between gap-4">
-                <span>Entrega</span>
+                <span>Zona</span>
                 <strong className="text-right">
                   {selectedZone?.zone}
                 </strong>
               </div>
 
               <div className="flex justify-between">
-                <span>Costo de envío</span>
-                <strong>
-                  {selectedZone?.id === "pickup"
-                    ? "Sin costo"
-                    : "Pendiente de ubicación"}
-                </strong>
+                <span>Envío</span>
+                <strong>Pendiente de ubicación</strong>
               </div>
 
               <div className="flex justify-between text-xl">
@@ -320,9 +306,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             </div>
 
             <p className="mt-4 rounded-2xl bg-orange-50 p-4 text-sm font-semibold text-orange-800">
-              {selectedZone?.id === "pickup"
-                ? "Te confirmaremos por WhatsApp cuándo estará listo tu pedido para recoger."
-                : "Al abrir WhatsApp, envía también tu ubicación para recibir el costo exacto del envío."}
+              Al abrir WhatsApp, envía también tu ubicación para recibir el
+              costo exacto del envío.
             </p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">

@@ -6,12 +6,6 @@ export interface ShippingZone {
 }
 
 export const shippingZones: ShippingZone[] = [
-  {
-    id: "pickup",
-    zone: "Pick up · Recoger en el local",
-    displayCost: "Sin costo",
-    cost: 0,
-  },
   { id: "nativitas", zone: "Nativitas", displayCost: "Sin costo", cost: 0 },
   { id: "san-bartolo", zone: "San Bartolo", displayCost: "Sin costo", cost: 0 },
   { id: "san-juan", zone: "San Juan", displayCost: "Sin costo", cost: 0 },

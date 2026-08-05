@@ -1,4 +1,4 @@
-import { MapPin, ShoppingBag, Truck } from "lucide-react";
+import { MapPin, Truck } from "lucide-react";
 import { shippingZones } from "../data/envios";
 
 export function ShippingSection() {
@@ -19,8 +19,8 @@ export function ShippingSection() {
           </h2>
 
           <p className="mt-3 text-slate-600">
-            Puedes pedir envío a domicilio o seleccionar Pick up para recoger
-            tu pedido directamente en el local.
+            Selecciona tu zona al hacer el pedido y después envíanos tu
+            ubicación por WhatsApp para confirmar el costo exacto.
           </p>
         </div>
 
@@ -36,11 +36,7 @@ export function ShippingSection() {
             >
               <div className="flex items-center gap-3">
                 <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-pink-600 shadow-sm">
-                  {item.id === "pickup" ? (
-                    <ShoppingBag size={18} />
-                  ) : (
-                    <MapPin size={18} />
-                  )}
+                  <MapPin size={18} />
                 </div>
 
                 <strong className="text-slate-800">{item.zone}</strong>
@@ -60,9 +56,8 @@ export function ShippingSection() {
         </div>
 
         <div className="mt-5 rounded-2xl bg-orange-50 p-4 text-center text-sm font-semibold text-orange-800">
-          En envíos a domicilio, los precios mostrados son aproximados y el
-          costo final se confirma después de recibir la ubicación exacta.
-          Pick up no tiene costo de envío.
+          Los precios mostrados son aproximados. El costo final se confirma
+          después de recibir la ubicación exacta.
         </div>
 
         <p className="mt-5 text-center text-sm font-semibold text-slate-500">
