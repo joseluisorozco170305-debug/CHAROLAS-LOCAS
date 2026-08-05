@@ -285,10 +285,10 @@ export function MenuSection() {
                 </h3>
 
                 <p className="mt-2 text-sm leading-6 text-amber-950/80">
-                  Los precios publicados corresponden a mojitos sin alcohol.
-                  La versión con alcohol tiene un costo adicional de $20 y se
-                  gestiona únicamente por WhatsApp, con verificación de mayoría
-                  de edad y solo para servicio a domicilio.
+                  Los mojitos mostrados en la página corresponden a versiones
+                  sin alcohol. Las variantes con alcohol se gestionan únicamente
+                  fuera de la página por una persona adulta, con verificación de
+                  mayoría de edad y solo para servicio a domicilio.
                 </p>
 
                 <p className="mt-2 text-sm font-semibold leading-6 text-red-700">

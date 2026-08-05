@@ -40,8 +40,6 @@ export function ProductConfigurator({
       .toLocaleLowerCase("es-MX")
       .includes("mango");
 
-  const isMojito = product.id.startsWith("mojito-");
-
   const addToCart = () => {
     if (errors.length > 0) {
       return;
@@ -114,19 +112,6 @@ export function ProductConfigurator({
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">
               🥭 Este producto contiene mango. Pregunta por disponibilidad antes
               de confirmar tu pedido.
-            </div>
-          )}
-
-          {isMojito && (
-            <div className="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-950">
-              <p className="font-black">
-                🍹 Versión con alcohol: +$20
-              </p>
-              <p className="mt-2 leading-6">
-                Se solicita únicamente por WhatsApp, con verificación de mayoría
-                de edad y solo para servicio a domicilio. El precio mostrado en
-                la página corresponde a la versión sin alcohol.
-              </p>
             </div>
           )}
 
