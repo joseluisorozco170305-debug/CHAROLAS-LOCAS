@@ -19,29 +19,6 @@ const normalize = (value: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
-const drinkSubcategory = (product: MenuProduct) => {
-  const id = product.id;
-
-  if (id === "aguas-frescas") return "aguas";
-  if (id.startsWith("licuado-")) return "licuados";
-  if (id.startsWith("frappe-") || id.startsWith("malteada-")) return "frappes";
-
-  if (
-    [
-      "azulitos",
-      "mangonada",
-      "ice-cereza",
-      "ice-mora-azul",
-      "picafresa-con-mango",
-      "frappe-fresas-con-crema",
-    ].includes(id)
-  ) {
-    return "especiales";
-  }
-
-  return "drinks";
-};
-
 const productSearchText = (product: MenuProduct) => {
   const categoryName =
     categorias.find((item) => item.id === product.categoryId)?.nombre ?? "";
@@ -71,7 +48,6 @@ const productSearchText = (product: MenuProduct) => {
 
 export function MenuSection() {
   const [category, setCategory] = useState("todos");
-  const [drinkSection, setDrinkSection] = useState("frappes");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] =
     useState<MenuProduct | null>(null);
@@ -92,17 +68,13 @@ export function MenuSection() {
           ? favoriteIds.includes(product.id)
           : product.categoryId === category);
 
-      const drinkSectionMatches =
-        category !== "bebidas" ||
-        drinkSubcategory(product) === drinkSection;
-
       const searchMatches =
         !normalizedSearch ||
         productSearchText(product).includes(normalizedSearch);
 
-      return categoryMatches && drinkSectionMatches && searchMatches;
+      return categoryMatches && searchMatches;
     });
-  }, [category, drinkSection, favoriteIds, normalizedSearch]);
+  }, [category, favoriteIds, normalizedSearch]);
 
   const featuredProducts = menu
     .filter((product) => product.featured || product.popular)
@@ -257,12 +229,7 @@ export function MenuSection() {
             <button
               key={item.id}
               type="button"
-              onClick={() => {
-                setCategory(item.id);
-                if (item.id === "bebidas") {
-                  setDrinkSection("frappes");
-                }
-              }}
+              onClick={() => setCategory(item.id)}
               className={`shrink-0 rounded-full px-5 py-3 text-sm font-black ${
                 category === item.id
                   ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
@@ -273,37 +240,6 @@ export function MenuSection() {
             </button>
           ))}
         </div>
-
-        {category === "bebidas" && (
-          <div className="mb-8 rounded-3xl border border-pink-100 bg-white p-4 shadow-sm">
-            <p className="mb-3 text-center text-xs font-black uppercase tracking-[.18em] text-pink-600">
-              Elige el tipo de bebida
-            </p>
-
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {[
-                ["licuados", "🥛 Licuados"],
-                ["frappes", "🧋 Frappés"],
-                ["especiales", "✨ Especiales"],
-                ["aguas", "💧 Aguas"],
-                ["drinks", "🍹 Drinks"],
-              ].map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setDrinkSection(id)}
-                  className={`shrink-0 rounded-2xl px-4 py-3 text-sm font-black transition ${
-                    drinkSection === id
-                      ? "bg-gradient-to-r from-pink-600 to-orange-500 text-white shadow-lg shadow-pink-200"
-                      : "bg-pink-50 text-slate-700 hover:bg-pink-100"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {products.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -326,9 +262,7 @@ export function MenuSection() {
             <p className="mt-4 text-xl font-black text-pink-700">
               {category === "favoritos"
                 ? "Todavía no tienes favoritos"
-                : category === "bebidas"
-                  ? "No encontramos bebidas en esta sección"
-                  : "No encontramos productos"}
+                : "No encontramos productos"}
             </p>
             <p className="mt-2 text-sm text-slate-600">
               {category === "favoritos"
@@ -338,7 +272,7 @@ export function MenuSection() {
           </div>
         )}
 
-        {category === "bebidas" && drinkSection === "drinks" && (
+        {category === "bebidas" && (
           <div className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
             <div className="flex items-start gap-3">
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-amber-100 text-amber-700">
