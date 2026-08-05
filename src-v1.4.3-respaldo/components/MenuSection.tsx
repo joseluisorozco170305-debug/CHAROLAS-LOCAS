@@ -1,50 +1,10 @@
-import {
-  AlertTriangle,
-  Heart,
-  Search,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { AlertTriangle, Search, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { categorias } from "../data/categorias";
 import { menu } from "../data/menu";
-import { useFavorites } from "../hooks/useFavorites";
 import type { MenuProduct } from "../types/product";
 import { ProductCard } from "./ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
-
-const normalize = (value: string) =>
-  value
-    .toLocaleLowerCase("es-MX")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-
-const productSearchText = (product: MenuProduct) => {
-  const categoryName =
-    categorias.find((item) => item.id === product.categoryId)?.nombre ?? "";
-
-  const groupText = (product.groups ?? [])
-    .flatMap((group) => [
-      group.title,
-      ...group.options.map((option) => option.name),
-    ])
-    .join(" ");
-
-  const sizeText = (product.sizes ?? [])
-    .map((size) => size.name)
-    .join(" ");
-
-  return normalize(
-    [
-      product.name,
-      product.description,
-      categoryName,
-      groupText,
-      sizeText,
-      ...(product.fixedIngredients ?? []),
-    ].join(" "),
-  );
-};
 
 export function MenuSection() {
   const [category, setCategory] = useState("todos");
@@ -52,43 +12,29 @@ export function MenuSection() {
   const [selectedProduct, setSelectedProduct] =
     useState<MenuProduct | null>(null);
 
-  const {
-    favoriteIds,
-    isFavorite,
-    toggleFavorite,
-  } = useFavorites();
-
-  const normalizedSearch = normalize(search.trim());
-
   const products = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase("es-MX");
+
     return menu.filter((product) => {
       const categoryMatches =
-        category === "todos" ||
-        (category === "favoritos"
-          ? favoriteIds.includes(product.id)
-          : product.categoryId === category);
+        category === "todos" || product.categoryId === category;
 
       const searchMatches =
         !normalizedSearch ||
-        productSearchText(product).includes(normalizedSearch);
+        product.name
+          .toLocaleLowerCase("es-MX")
+          .includes(normalizedSearch) ||
+        product.description
+          .toLocaleLowerCase("es-MX")
+          .includes(normalizedSearch);
 
       return categoryMatches && searchMatches;
     });
-  }, [category, favoriteIds, normalizedSearch]);
+  }, [category, search]);
 
   const featuredProducts = menu
     .filter((product) => product.featured || product.popular)
     .slice(0, 5);
-
-  const suggestions = useMemo(() => {
-    if (!normalizedSearch) return [];
-
-    return menu
-      .filter((product) =>
-        productSearchText(product).includes(normalizedSearch),
-      )
-      .slice(0, 5);
-  }, [normalizedSearch]);
 
   const iconForCategory = (categoryId: string) =>
     categorias.find((item) => item.id === categoryId)?.icono ?? "🍽️";
@@ -106,7 +52,7 @@ export function MenuSection() {
           </h2>
 
           <p className="mt-3 text-slate-600">
-            Busca por nombre, categoría, descripción o ingrediente.
+            Incluye Todo con crema, Dulces, Snacks, Charolas y Drinks.
           </p>
         </div>
 
@@ -140,7 +86,7 @@ export function MenuSection() {
           </div>
         </div>
 
-        <div className="relative mx-auto mb-7 max-w-2xl">
+        <div className="mx-auto mb-7 max-w-2xl">
           <label className="relative block">
             <Search
               size={20}
@@ -151,7 +97,7 @@ export function MenuSection() {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="¿Qué se te antoja hoy?"
+              placeholder="Buscar fresas, boneless, frappé..."
               className="w-full rounded-2xl border border-pink-100 bg-white py-4 pl-12 pr-12 shadow-sm outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
             />
 
@@ -165,33 +111,6 @@ export function MenuSection() {
               </button>
             )}
           </label>
-
-          {suggestions.length > 0 && (
-            <div className="absolute inset-x-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-2xl">
-              {suggestions.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  onClick={() => {
-                    setSearch(product.name);
-                    setSelectedProduct(product);
-                  }}
-                  className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left last:border-b-0 hover:bg-pink-50"
-                >
-                  <span className="text-2xl">
-                    {iconForCategory(product.categoryId)}
-                  </span>
-
-                  <div>
-                    <p className="font-black text-slate-900">{product.name}</p>
-                    <p className="line-clamp-1 text-xs text-slate-500">
-                      {product.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="mb-10 flex gap-2 overflow-x-auto pb-3">
@@ -206,24 +125,6 @@ export function MenuSection() {
           >
             ✨ Todos
           </button>
-
-          {favoriteIds.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setCategory("favoritos")}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-black ${
-                category === "favoritos"
-                  ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
-                  : "bg-white text-pink-600 ring-1 ring-pink-100"
-              }`}
-            >
-              <Heart
-                size={16}
-                fill={category === "favoritos" ? "currentColor" : "none"}
-              />
-              Mis favoritos
-            </button>
-          )}
 
           {categorias.map((item) => (
             <button
@@ -249,25 +150,14 @@ export function MenuSection() {
                 product={product}
                 icon={iconForCategory(product.categoryId)}
                 onCustomize={setSelectedProduct}
-                favorite={isFavorite(product.id)}
-                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
         ) : (
           <div className="rounded-3xl border border-dashed border-pink-300 bg-pink-50 p-10 text-center">
-            <p className="text-5xl">
-              {category === "favoritos" ? "❤️" : "🔍"}
-            </p>
+            <p className="text-5xl">🔍</p>
             <p className="mt-4 text-xl font-black text-pink-700">
-              {category === "favoritos"
-                ? "Todavía no tienes favoritos"
-                : "No encontramos productos"}
-            </p>
-            <p className="mt-2 text-sm text-slate-600">
-              {category === "favoritos"
-                ? "Toca el corazón de cualquier producto para guardarlo."
-                : "Prueba con otro nombre, ingrediente o categoría."}
+              No encontramos productos
             </p>
           </div>
         )}

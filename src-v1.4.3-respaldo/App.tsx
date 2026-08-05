@@ -10,7 +10,6 @@ import { useState } from "react";
 import logo from "./assets/logo-charolas-locas.png";
 import { CartDrawer } from "./components/CartDrawer";
 import { MenuSection } from "./components/MenuSection";
-import { FirstTimeSection } from "./components/FirstTimeSection";
 import { ScheduleSection } from "./components/ScheduleSection";
 import { ShippingSection } from "./components/ShippingSection";
 import { PaymentSection } from "./components/PaymentSection";
@@ -203,7 +202,6 @@ function App() {
           </div>
         </section>
 
-        <FirstTimeSection />
         <MenuSection />
         <ScheduleSection />
         <ShippingSection />

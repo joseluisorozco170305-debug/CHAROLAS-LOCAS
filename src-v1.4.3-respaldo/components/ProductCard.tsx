@@ -1,4 +1,4 @@
-import { Flame, Heart, Sparkles } from "lucide-react";
+import { Flame, Sparkles } from "lucide-react";
 import type { MenuProduct } from "../types/product";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
 import { formatPrice } from "../utils/formatPrice";
@@ -7,8 +7,6 @@ interface ProductCardProps {
   product: MenuProduct;
   icon: string;
   onCustomize: (product: MenuProduct) => void;
-  favorite: boolean;
-  onToggleFavorite: (productId: string) => void;
 }
 
 const startingPrice = (product: MenuProduct) =>
@@ -20,8 +18,6 @@ export function ProductCard({
   product,
   icon,
   onCustomize,
-  favorite,
-  onToggleFavorite,
 }: ProductCardProps) {
   const normalPrice = startingPrice(product);
   const finalPrice = discountedPrice(normalPrice, product.categoryId);
@@ -41,21 +37,7 @@ export function ProductCard({
             {icon}
           </div>
 
-          <div className="flex items-start gap-2">
-            <button
-              type="button"
-              aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
-              onClick={() => onToggleFavorite(product.id)}
-              className={`grid h-11 w-11 place-items-center rounded-2xl border shadow-sm transition ${
-                favorite
-                  ? "border-pink-200 bg-pink-600 text-white"
-                  : "border-white bg-white/90 text-pink-600 hover:bg-pink-50"
-              }`}
-            >
-              <Heart size={20} fill={favorite ? "currentColor" : "none"} />
-            </button>
-
-            <div className="flex flex-wrap justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             {product.popular && (
               <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-3 py-1 text-xs font-black text-white">
                 <Flame size={13} />
@@ -69,7 +51,6 @@ export function ProductCard({
                 Destacado
               </span>
             )}
-            </div>
           </div>
         </div>
       </div>
