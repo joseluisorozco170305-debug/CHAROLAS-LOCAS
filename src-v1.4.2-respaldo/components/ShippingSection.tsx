@@ -19,15 +19,14 @@ export function ShippingSection() {
           </h2>
 
           <p className="mt-3 text-slate-600">
-            Selecciona tu zona al hacer el pedido y después envíanos tu
-            ubicación por WhatsApp para confirmar el costo exacto.
+            El costo puede variar dependiendo de la ubicación exacta.
           </p>
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-pink-100 bg-pink-50/40 shadow-xl shadow-pink-100/50">
           {shippingZones.map((item, index) => (
             <div
-              key={item.id}
+              key={item.zone}
               className={`flex items-center justify-between gap-4 px-5 py-4 sm:px-7 ${
                 index !== shippingZones.length - 1
                   ? "border-b border-pink-100"
@@ -35,7 +34,7 @@ export function ShippingSection() {
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-pink-600 shadow-sm">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-white text-pink-600 shadow-sm">
                   <MapPin size={18} />
                 </div>
 
@@ -43,21 +42,16 @@ export function ShippingSection() {
               </div>
 
               <span
-                className={`shrink-0 rounded-full px-3 py-1 text-sm font-black ${
-                  item.cost === 0
+                className={`rounded-full px-3 py-1 text-sm font-black ${
+                  item.cost === "Sin costo"
                     ? "bg-emerald-100 text-emerald-700"
                     : "bg-white text-pink-700 ring-1 ring-pink-100"
                 }`}
               >
-                {item.displayCost}
+                {item.cost}
               </span>
             </div>
           ))}
-        </div>
-
-        <div className="mt-5 rounded-2xl bg-orange-50 p-4 text-center text-sm font-semibold text-orange-800">
-          Los precios mostrados son aproximados. El costo final se confirma
-          después de recibir la ubicación exacta.
         </div>
 
         <p className="mt-5 text-center text-sm font-semibold text-slate-500">

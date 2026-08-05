@@ -84,6 +84,7 @@ export const ingredientesSalados = zeroPrice([
   "Piña",
   "Sandía",
   "Melón",
+  "Mango",
   "Jícama",
   "Zanahoria",
   "Uvas",

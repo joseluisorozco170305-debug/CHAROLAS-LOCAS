@@ -35,10 +35,6 @@ export function ProductConfigurator({
   const finalUnitPrice = discountedPrice(normalUnitPrice, product.categoryId);
   const errors = validateConfiguration(product, configuration);
   const total = finalUnitPrice * configuration.quantity;
-  const asksMangoAvailability =
-    `${product.name} ${product.description}`
-      .toLocaleLowerCase("es-MX")
-      .includes("mango");
 
   const addToCart = () => {
     if (errors.length > 0) {
@@ -108,13 +104,6 @@ export function ProductConfigurator({
         </div>
 
         <div className="space-y-7 p-6">
-          {asksMangoAvailability && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">
-              🥭 Este producto contiene mango. Pregunta por disponibilidad antes
-              de confirmar tu pedido.
-            </div>
-          )}
-
           {product.sizes?.length ? (
             <section>
               <h4 className="font-black text-slate-900">Elige un tamaño</h4>

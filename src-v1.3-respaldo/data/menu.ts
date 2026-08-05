@@ -777,7 +777,7 @@ export const menu: MenuProduct[] = [
     "charolas-locas",
     "Charolón",
     "Hamburguesa de boneless, aros de cebolla, papas gajo, alitas y aderezos.",
-    265,
+    240,
     {
       popular: true,
       groups: [
@@ -841,8 +841,8 @@ export const menu: MenuProduct[] = [
       "Bowl de crepa en tiras con una fruta, un jarabe, un topping, chantilly y un chocolate a elegir.",
     available: true,
     sizes: [
-      { id: "chica", name: "Chica", price: 85 },
-      { id: "grande", name: "Grande", price: 170 },
+      { id: "chica", name: "Chica", price: 70 },
+      { id: "grande", name: "Grande", price: 110 },
     ],
     groups: [
       group(

@@ -14,8 +14,6 @@ import { ScheduleSection } from "./components/ScheduleSection";
 import { ShippingSection } from "./components/ShippingSection";
 import { PaymentSection } from "./components/PaymentSection";
 import { ScrollToTop } from "./components/ScrollToTop";
-import { MobileBottomNav } from "./components/MobileBottomNav";
-import { AddToCartToast } from "./components/AddToCartToast";
 import { useCart } from "./context/CartContext";
 import { config } from "./data/config";
 import { formatPrice } from "./utils/formatPrice";
@@ -30,7 +28,7 @@ function App() {
   const { items, total } = useCart();
 
   return (
-    <div className="min-h-screen bg-[#fff8fb] pb-20 text-slate-900 md:pb-0">
+    <div className="min-h-screen bg-[#fff8fb] text-slate-900">
       <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="#inicio" className="flex items-center gap-3">
@@ -292,9 +290,7 @@ function App() {
         </button>
       )}
 
-      <AddToCartToast />
       <ScrollToTop />
-      <MobileBottomNav onOpenCart={() => setCartOpen(true)} />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

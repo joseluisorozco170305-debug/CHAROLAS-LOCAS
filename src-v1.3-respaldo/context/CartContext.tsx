@@ -15,18 +15,13 @@ interface CartValue {
   total: number;
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  lastAddedName: string | null;
-  clearLastAdded: () => void;
 }
 
 const CartContext = createContext<CartValue | null>(null);
 const STORAGE_KEY = "charolas-locas-cart-v5";
 
 export function CartProvider({ children }: PropsWithChildren) {
-  const [lastAddedName, setLastAddedName] = useState<string | null>(null);
-
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as CartItem[];
@@ -61,25 +56,12 @@ export function CartProvider({ children }: PropsWithChildren) {
       subtotal,
       discount,
       total,
-      addItem: (item) => {
-        setItems((current) => [...current, item]);
-        setLastAddedName(item.productName);
-      },
+      addItem: (item) => setItems((current) => [...current, item]),
       removeItem: (id) =>
         setItems((current) => current.filter((item) => item.id !== id)),
-      updateQuantity: (id, quantity) =>
-        setItems((current) =>
-          current.map((item) => {
-            if (item.id !== id) return item;
-            const safeQuantity = Math.max(1, quantity);
-            return { ...item, quantity: safeQuantity, subtotal: item.finalUnitPrice * safeQuantity };
-          }),
-        ),
       clearCart: () => setItems([]),
-      lastAddedName,
-      clearLastAdded: () => setLastAddedName(null),
     }),
-    [items, subtotal, discount, total, lastAddedName],
+    [items, subtotal, discount, total],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
