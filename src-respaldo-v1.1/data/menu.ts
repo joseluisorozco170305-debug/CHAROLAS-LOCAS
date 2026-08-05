@@ -598,298 +598,31 @@ export const menu: MenuProduct[] = [
     },
   ),
 
-  simple(
-    "gomiboing",
-    "charolas-locas",
-    "Gomiboing",
-    "Boing con gomitas de tu elección, chamoy, Miguelito y trocitos de fruta.",
-    45,
-    {
-      groups: [
-        group(
-          "gomitas-gomiboing",
-          "Elige tus gomitas",
-          [
-            option("panditas", "Panditas"),
-            option("lombrices", "Lombrices"),
-            option("mangomitas", "Mangomitas"),
-            option("picafresas", "Picafresas"),
-          ],
-          1,
-          2,
-          true,
-        ),
-      ],
-    },
+  ...[
+    ["dorilocos", "Dorilocos", 45],
+    ["gomiboing", "Gomiboing", 45],
+    ["chicharroncitos", "Chicharroncitos preparados", 50],
+    ["vaso-loco", "Vaso Loco", 55],
+    ["manzana-loca", "Manzana Loca", 60],
+    ["pepinos-locos", "Pepinos Locos", 75],
+    ["hotcakes-cremosos", "Hotcakes Cremosos", 95],
+    ["fresada", "Fresada", 40],
+    ["arizona-loca", "Arizona Loca", 45],
+    ["charola-cubierta", "Charola Cubierta", 75],
+    ["charolon", "Charolón", 240],
+    ["charola-suprema", "Charola Suprema", 250],
+  ].map(([id, name, price]) =>
+    simple(String(id), "charolas-locas", String(name), "Una combinación completamente loca.", Number(price), {
+      popular: id === "charolon",
+      featured: id === "charola-suprema",
+    }),
   ),
-
-  simple(
-    "dorilocos",
-    "charolas-locas",
-    "Dorilocos",
-    "Doritos de tu elección con pepino, zanahoria, jícama, cueritos, gomitas, cacahuates, chamoy, Miguelito y Tajín.",
-    45,
-    {
-      groups: [
-        group(
-          "doritos",
-          "Elige tus Doritos",
-          [
-            option("nacho", "Doritos Nacho"),
-            option("incognita", "Doritos Incógnita"),
-            option("flamin-hot", "Doritos Flamin' Hot"),
-          ],
-          1,
-          1,
-          true,
-        ),
-      ],
-    },
-  ),
-
-  simple(
-    "manzana-loca",
-    "charolas-locas",
-    "Manzana Loca",
-    "Manzana cubierta de tamarindo picosito, gomitas, Skwinkles, chamoy, Miguelito y Tajín.",
-    60,
-  ),
-
-  simple(
-    "pepinos-locos",
-    "charolas-locas",
-    "Pepinos Locos",
-    "Pepino cubierto de tamarindo picosito, cacahuates, cueritos, papas a elegir, gomitas a elegir, limón, chamoy y Miguelito.",
-    75,
-    {
-      groups: [
-        group(
-          "papas-pepinos",
-          "Elige las papas",
-          [
-            option("takis-fuego", "Takis Fuego"),
-            option("chetos-flaming-hot", "Chetos Flaming Hot"),
-            option("papas-clasicas", "Papas clásicas"),
-          ],
-          1,
-          1,
-          true,
-        ),
-        group(
-          "gomitas-pepinos",
-          "Elige las gomitas",
-          [
-            option("panditas", "Panditas"),
-            option("lombrices", "Lombrices"),
-            option("mangomitas", "Mangomitas"),
-            option("picafresas", "Picafresas"),
-          ],
-          1,
-          2,
-          true,
-        ),
-      ],
-    },
-  ),
-
-  simple(
-    "chicharroncitos",
-    "charolas-locas",
-    "Chicharroncitos preparados",
-    "Chicharrones mini con cueritos, col, jitomate, aguacate, crema, limón y salsa.",
-    50,
-  ),
-
-  simple(
-    "fresada",
-    "charolas-locas",
-    "Fresada",
-    "Paleta congelada de fresas con crema en una base de chocolate crujiente y un topping.",
-    40,
-    {
-      groups: [
-        group(
-          "topping-fresada",
-          "Elige 1 topping",
-          toppings,
-          1,
-          1,
-          true,
-        ),
-      ],
-    },
-  ),
-
-  simple(
-    "hotcakes-cremosos",
-    "charolas-locas",
-    "Hotcakes Cremosos",
-    "Vaso de 16 mini hotcakes con fresas con crema, un topping, un jarabe y chantilly.",
-    95,
-    {
-      groups: [
-        group(
-          "topping-hotcakes",
-          "Elige 1 topping",
-          toppings,
-          1,
-          1,
-          true,
-        ),
-        group(
-          "jarabe-hotcakes",
-          "Elige 1 jarabe",
-          jarabes,
-          1,
-          1,
-          true,
-        ),
-      ],
-    },
-  ),
-
-  simple(
-    "arizona-loca",
-    "charolas-locas",
-    "Arizona Loca",
-    "Arizona de sabor disponible con escarchado, fruta, gomitas, chamoy, Miguelito y Tajín.",
-    45,
-  ),
-
-  simple(
-    "vaso-loco",
-    "charolas-locas",
-    "Vaso Loco",
-    "Vaso de mango y fresa picada acompañado de Skwinkles. Consulta disponibilidad.",
-    55,
-  ),
-
-  simple(
-    "charola-cubierta",
-    "charolas-locas",
-    "Charola Cubierta",
-    "Manzana y uvas cubiertas, mango picado, mangomitas, Skwinkles, chamoy, Miguelito y Tajín.",
-    75,
-  ),
-
-  simple(
-    "charolon",
-    "charolas-locas",
-    "Charolón",
-    "Hamburguesa de boneless, aros de cebolla, papas gajo, alitas y aderezos.",
-    240,
-    {
-      popular: true,
-      groups: [
-        group(
-          "sabor-alitas-charolon",
-          "Elige el sabor de las alitas",
-          salsas,
-          1,
-          1,
-          true,
-        ),
-        group(
-          "sabor-boneless-charolon",
-          "Elige el sabor de la hamburguesa de boneless",
-          salsas,
-          1,
-          1,
-          true,
-        ),
-        group(
-          "extras-charolon",
-          "Extras opcionales",
-          extrasSnacks,
-          0,
-          extrasSnacks.length,
-          false,
-        ),
-      ],
-    },
-  ),
-
-  simple(
-    "charola-suprema",
-    "charolas-locas",
-    "Charola Suprema",
-    "Jícama, zanahoria, sandía, pepino, manzana y uva cubierta, mango, Skwinkles, cacahuates y dulces picositos.",
-    250,
-    {
-      featured: true,
-    },
-  ),
-
-  {
-    id: "vaso-mix",
-    categoryId: "charolas-locas",
-    name: "Vaso Mix",
-    description:
-      "Pepino, zanahoria, jícama, cacahuates y Chetos Flaming Hot.",
-    available: true,
-    sizes: [
-      { id: "medio-litro", name: "1/2 litro", price: 50 },
-      { id: "litro", name: "1 litro", price: 95 },
-    ],
-  },
-
-  {
-    id: "crepa-loca",
-    categoryId: "charolas-locas",
-    name: "Crepa Loca",
-    description:
-      "Bowl de crepa en tiras con una fruta, un jarabe, un topping, chantilly y un chocolate a elegir.",
-    available: true,
-    sizes: [
-      { id: "chica", name: "Chica", price: 70 },
-      { id: "grande", name: "Grande", price: 110 },
-    ],
-    groups: [
-      group(
-        "fruta-crepa",
-        "Elige 1 fruta",
-        frutasDulces,
-        1,
-        1,
-        true,
-      ),
-      group(
-        "jarabe-crepa",
-        "Elige 1 jarabe",
-        jarabes,
-        1,
-        1,
-        true,
-      ),
-      group(
-        "topping-crepa",
-        "Elige 1 topping",
-        toppings,
-        1,
-        1,
-        true,
-      ),
-    ],
-  },
-
-  {
-    id: "chicharron-preparado",
-    categoryId: "charolas-locas",
-    name: "Chicharrón preparado",
-    description:
-      "Chicharrón con col, cueritos, jitomate, aguacate, limón, salsa y Tajín.",
-    available: true,
-    sizes: [
-      { id: "mitad", name: "Mitad", price: 25 },
-      { id: "completo", name: "Completo", price: 50 },
-    ],
-  },
 
   {
     id: "marucharola",
     categoryId: "charolas-locas",
     name: "Marucharola",
-    description: "Maruchan, Chetos, papas Flaming Hot, Takis Fuego, queso amarillo, limón y salsa.",
+    description: "Maruchan, Chetos, papas Flaming Hot, Takis, queso, limón y salsa.",
     available: true,
     sizes: [
       { id: "medio-litro", name: "1/2 litro", price: 80 },
@@ -900,7 +633,7 @@ export const menu: MenuProduct[] = [
     id: "maruesquites",
     categoryId: "charolas-locas",
     name: "Maruesquites",
-    description: "Maruchan, esquites, papas de tu elección, queso amarillo, queso blanco, mayonesa, limón y salsa.",
+    description: "Maruchan, esquites, papas, quesos, mayonesa, limón y salsa.",
     available: true,
     sizes: [
       { id: "medio-litro", name: "1/2 litro", price: 95 },
@@ -911,7 +644,7 @@ export const menu: MenuProduct[] = [
     id: "papas-locas",
     categoryId: "charolas-locas",
     name: "Papas Locas",
-    description: "Papas naturales, pepino, cueritos, cacahuates, salsa Maggy, salsa Inglesa, salsa Botanera y limón.",
+    description: "Papas naturales, pepino, cueritos, cacahuates y salsas.",
     available: true,
     sizes: [
       { id: "medio-litro", name: "1/2 litro", price: 65 },

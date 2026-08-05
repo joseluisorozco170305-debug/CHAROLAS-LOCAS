@@ -11,8 +11,6 @@ import logo from "./assets/logo-charolas-locas.png";
 import { CartDrawer } from "./components/CartDrawer";
 import { MenuSection } from "./components/MenuSection";
 import { ScheduleSection } from "./components/ScheduleSection";
-import { ShippingSection } from "./components/ShippingSection";
-import { PaymentSection } from "./components/PaymentSection";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { useCart } from "./context/CartContext";
 import { config } from "./data/config";
@@ -58,12 +56,6 @@ function App() {
             <a href="#horarios" className="font-bold text-slate-600 hover:text-pink-600">
               Horarios
             </a>
-            <a href="#envios" className="font-bold text-slate-600 hover:text-pink-600">
-              Envíos
-            </a>
-            <a href="#pago" className="font-bold text-slate-600 hover:text-pink-600">
-              Pago
-            </a>
             <a href="#contacto" className="font-bold text-slate-600 hover:text-pink-600">
               Contacto
             </a>
@@ -100,8 +92,6 @@ function App() {
               ["Inicio", "#inicio"],
               ["Menú", "#menu"],
               ["Horarios", "#horarios"],
-              ["Envíos", "#envios"],
-              ["Pago", "#pago"],
               ["Contacto", "#contacto"],
             ].map(([label, href]) => (
               <a
@@ -202,8 +192,6 @@ function App() {
 
         <MenuSection />
         <ScheduleSection />
-        <ShippingSection />
-        <PaymentSection />
 
         <section id="contacto" className="bg-white py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
