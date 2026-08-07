@@ -86,7 +86,7 @@ const drinks = [
   ["frappe-mamut", "Frappé de Mamut", 75],
   ["frappe-nutella", "Frappé de Nutella", 80],
   ["frappe-carlos-v", "Frappé Carlos V", 80],
-  ["frappe-baileys", "Frappé Baileys", 110],
+  ["frappe-baileys", "Frappé Baileys", 85],
   ["frappe-kinder-delice", "Frappé Kinder Delice", 85],
   ["malteada-fresa", "Malteada de fresa", 50],
   ["malteada-vainilla", "Malteada de vainilla", 50],
