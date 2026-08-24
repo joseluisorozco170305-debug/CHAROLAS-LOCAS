@@ -1,10 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  color: #172033;
-  background: #fff8fb;
+  font-family: "Nunito", ui-rounded, "Avenir Next", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #43142b;
+  background: #fff9fc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -18,9 +19,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 10%, rgba(251, 207, 232, 0.5), transparent 28%),
-    radial-gradient(circle at 92% 14%, rgba(254, 215, 170, 0.45), transparent 24%),
-    #fff8fb;
+    radial-gradient(circle at 7% 8%, rgba(251, 207, 232, 0.72), transparent 25%),
+    radial-gradient(circle at 92% 10%, rgba(249, 168, 212, 0.35), transparent 21%),
+    radial-gradient(circle at 15% 70%, rgba(253, 242, 248, 0.95), transparent 28%),
+    radial-gradient(circle at 88% 76%, rgba(250, 232, 255, 0.72), transparent 24%),
+    linear-gradient(180deg, #fff9fc 0%, #fff7fb 48%, #fffafd 100%);
 }
 
 * {
@@ -42,4 +45,44 @@ button {
 ::selection {
   background: #f9a8d4;
   color: #500724;
+}
+
+.soft-heading {
+  font-family: "Baloo 2", "Nunito", ui-rounded, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.product-card-soft {
+  isolation: isolate;
+}
+
+.product-emoji {
+  filter: drop-shadow(0 10px 12px rgba(190, 24, 93, 0.08));
+}
+
+.menu-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #f9a8d4 transparent;
+}
+
+.menu-scroll::-webkit-scrollbar {
+  height: 7px;
+}
+
+.menu-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #f9a8d4, #f0abfc);
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at 10% 5%, rgba(251, 207, 232, 0.65), transparent 24%),
+      radial-gradient(circle at 95% 20%, rgba(250, 232, 255, 0.65), transparent 24%),
+      #fff9fc;
+  }
 }

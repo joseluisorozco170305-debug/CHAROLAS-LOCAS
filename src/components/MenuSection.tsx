@@ -122,26 +122,29 @@ export function MenuSection() {
     categorias.find((item) => item.id === categoryId)?.icono ?? "🍽️";
 
   return (
-    <section id="menu" className="py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <p className="text-sm font-black uppercase tracking-[.22em] text-pink-600">
+    <section id="menu" className="relative overflow-hidden py-20 sm:py-24">
+      <div className="pointer-events-none absolute -left-24 top-12 h-64 w-64 rounded-full bg-pink-200/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-28 top-40 h-72 w-72 rounded-full bg-fuchsia-200/20 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 text-2xl opacity-30">💗 ✨ 💕</div>
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-11 max-w-3xl text-center">
+          <p className="soft-heading text-base font-extrabold tracking-[.08em] text-pink-500">
             Nuestro menú
           </p>
 
-          <h2 className="mt-2 text-3xl font-black text-slate-900 sm:text-4xl">
+          <h2 className="soft-heading mt-2 text-4xl font-black leading-tight text-rose-950 sm:text-5xl">
             Elige y personaliza tu antojo
           </h2>
 
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-base font-semibold text-rose-950/60 sm:text-lg">
             Busca por nombre, categoría, descripción o ingrediente.
           </p>
         </div>
 
-        <div className="mb-10 rounded-3xl border border-orange-100 bg-gradient-to-r from-orange-50 via-pink-50 to-fuchsia-50 p-5 sm:p-6">
+        <div className="mb-10 rounded-[2rem] border border-pink-100 bg-gradient-to-r from-rose-50 via-pink-50 to-fuchsia-50 p-5 shadow-[0_14px_35px_rgba(244,114,182,0.10)] sm:p-6">
           <div className="flex items-center gap-2">
             <Sparkles size={20} className="text-orange-500" />
-            <h3 className="text-lg font-black text-slate-900">
+            <h3 className="soft-heading text-xl font-black text-rose-950">
               Los más pedidos
             </h3>
           </div>
@@ -152,15 +155,15 @@ export function MenuSection() {
                 key={product.id}
                 type="button"
                 onClick={() => setSelectedProduct(product)}
-                className="min-w-48 rounded-2xl border border-white bg-white/85 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="min-w-52 rounded-[1.35rem] border border-white bg-white/90 p-4 text-left shadow-[0_8px_20px_rgba(244,114,182,0.09)] transition hover:-translate-y-1 hover:border-pink-100 hover:shadow-[0_12px_26px_rgba(244,114,182,0.14)]"
               >
                 <span className="text-2xl">
                   {iconForCategory(product.categoryId)}
                 </span>
-                <p className="mt-2 font-black text-slate-900">
+                <p className="soft-heading mt-2 font-extrabold text-rose-950">
                   {product.name}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-pink-600">
+                <p className="mt-1 text-xs font-extrabold text-pink-500">
                   Ver opciones
                 </p>
               </button>
@@ -168,7 +171,7 @@ export function MenuSection() {
           </div>
         </div>
 
-        <div className="relative mx-auto mb-7 max-w-2xl">
+        <div className="relative mx-auto mb-8 max-w-3xl">
           <label className="relative block">
             <Search
               size={20}
@@ -180,7 +183,7 @@ export function MenuSection() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="¿Qué se te antoja hoy?"
-              className="w-full rounded-2xl border border-pink-100 bg-white py-4 pl-12 pr-12 shadow-sm outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+              className="w-full rounded-[1.4rem] border border-pink-100 bg-white/95 py-4 pl-12 pr-12 font-semibold text-rose-950 shadow-[0_8px_24px_rgba(244,114,182,0.08)] outline-none placeholder:text-rose-300 focus:border-pink-300 focus:ring-4 focus:ring-pink-100"
             />
 
             {search && (
@@ -222,14 +225,14 @@ export function MenuSection() {
           )}
         </div>
 
-        <div className="mb-10 flex gap-2 overflow-x-auto pb-3">
+        <div className="menu-scroll mb-10 flex gap-2.5 overflow-x-auto pb-3">
           <button
             type="button"
             onClick={() => setCategory("todos")}
             className={`shrink-0 rounded-full px-5 py-3 text-sm font-black ${
               category === "todos"
-                ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
-                : "bg-white text-slate-600 ring-1 ring-pink-100"
+                ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
+                : "bg-white/90 text-rose-950/70 ring-1 ring-pink-100 hover:bg-pink-50"
             }`}
           >
             ✨ Todos
@@ -241,8 +244,8 @@ export function MenuSection() {
               onClick={() => setCategory("favoritos")}
               className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-black ${
                 category === "favoritos"
-                  ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
-                  : "bg-white text-pink-600 ring-1 ring-pink-100"
+                  ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
+                  : "bg-white/90 text-pink-500 ring-1 ring-pink-100 hover:bg-pink-50"
               }`}
             >
               <Heart
@@ -265,8 +268,8 @@ export function MenuSection() {
               }}
               className={`shrink-0 rounded-full px-5 py-3 text-sm font-black ${
                 category === item.id
-                  ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
-                  : "bg-white text-slate-600 ring-1 ring-pink-100"
+                  ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
+                  : "bg-white/90 text-rose-950/70 ring-1 ring-pink-100 hover:bg-pink-50"
               }`}
             >
               {item.icono} {item.nombre}
@@ -275,8 +278,8 @@ export function MenuSection() {
         </div>
 
         {category === "bebidas" && (
-          <div className="mb-8 rounded-3xl border border-pink-100 bg-white p-4 shadow-sm">
-            <p className="mb-3 text-center text-xs font-black uppercase tracking-[.18em] text-pink-600">
+          <div className="mb-8 rounded-[1.75rem] border border-pink-100 bg-white/90 p-4 shadow-[0_10px_28px_rgba(244,114,182,0.08)]">
+            <p className="soft-heading mb-3 text-center text-sm font-extrabold tracking-[.08em] text-pink-500">
               Elige el tipo de bebida
             </p>
 
@@ -294,7 +297,7 @@ export function MenuSection() {
                   onClick={() => setDrinkSection(id)}
                   className={`shrink-0 rounded-2xl px-4 py-3 text-sm font-black transition ${
                     drinkSection === id
-                      ? "bg-gradient-to-r from-pink-600 to-orange-500 text-white shadow-lg shadow-pink-200"
+                      ? "bg-gradient-to-r from-pink-500 via-rose-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
                       : "bg-pink-50 text-slate-700 hover:bg-pink-100"
                   }`}
                 >
@@ -306,7 +309,7 @@ export function MenuSection() {
         )}
 
         {products.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-7">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
