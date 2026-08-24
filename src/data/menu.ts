@@ -86,7 +86,7 @@ const drinks = [
   ["frappe-mamut", "Frappé de Mamut", 75],
   ["frappe-nutella", "Frappé de Nutella", 80],
   ["frappe-carlos-v", "Frappé Carlos V", 80],
-  ["frappe-baileys", "Frappé Baileys", 110],
+  ["frappe-baileys", "Frappé Baileys", 100],
   ["frappe-kinder-delice", "Frappé Kinder Delice", 85],
   ["malteada-fresa", "Malteada de fresa", 50],
   ["malteada-vainilla", "Malteada de vainilla", 50],
@@ -489,7 +489,7 @@ export const menu: MenuProduct[] = [
     "combo-parejas",
     "snacks-calientes",
     "Combo Parejas",
-    "Alitas, boneless, mini hotcakes, fruta con crema y charola salada.",
+    "Alitas, boneless, mini hotcakes, fresas con crema Mini y charola salada.",
     285,
     {
       groups: [
@@ -529,6 +529,14 @@ export const menu: MenuProduct[] = [
           "hotcakes-jarabe",
           "Elige 1 jarabe para los mini hotcakes",
           jarabes,
+          1,
+          1,
+          true,
+        ),
+        group(
+          "fresas-topping",
+          "Elige 1 topping para las fresas con crema Mini",
+          toppings,
           1,
           1,
           true,
