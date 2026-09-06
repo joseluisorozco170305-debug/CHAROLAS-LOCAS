@@ -48,13 +48,13 @@ const creamSizes = [
     id: "mini",
     name: "Mini (1/4)",
     price: 60,
-    groupRules: { toppings: { required: true, min: 1, max: 1 } },
+    groupRules: { toppings: { required: false, min: 0, max: 1 } },
   },
   {
     id: "chico",
     name: "Chico (1/2 litro)",
     price: 100,
-    groupRules: { toppings: { required: true, min: 2, max: 2 } },
+    groupRules: { toppings: { required: false, min: 0, max: 2 } },
   },
   {
     id: "grande",
@@ -65,14 +65,14 @@ const creamSizes = [
 ];
 
 const creamGroups = [
-  group("toppings", "Elige tus toppings", toppings, 1, 1, true),
+  group("toppings", "Elige tus toppings", toppings, 0, 1, false),
   group("extras", "Extras opcionales", extrasCrema, 0, extrasCrema.length, false),
 ];
 
 const sweetGroups = [
   group("frutas", "Elige tus frutas", frutasDulces, 1, 1, true),
-  group("toppings", "Elige tus toppings", toppings, 1, 1, true),
-  group("jarabes", "Elige tus jarabes", jarabes, 1, 1, true),
+  group("toppings", "Elige tus toppings", toppings, 0, 1, false),
+  group("jarabes", "Elige tus jarabes", jarabes, 0, 1, false),
   group("extras", "Extras opcionales", extrasDulces, 0, extrasDulces.length, false),
 ];
 
@@ -86,7 +86,7 @@ const drinks = [
   ["frappe-mamut", "Frappé de Mamut", 75],
   ["frappe-nutella", "Frappé de Nutella", 80],
   ["frappe-carlos-v", "Frappé Carlos V", 80],
-  ["frappe-baileys", "Frappé Baileys", 100],
+  ["frappe-baileys", "Frappé Baileys", 110],
   ["frappe-kinder-delice", "Frappé Kinder Delice", 85],
   ["malteada-fresa", "Malteada de fresa", 50],
   ["malteada-vainilla", "Malteada de vainilla", 50],
@@ -152,13 +152,13 @@ export const menu: MenuProduct[] = [
         id: "mini",
         name: "Mini (1/4)",
         price: 70,
-        groupRules: { toppings: { required: true, min: 1, max: 1 } },
+        groupRules: { toppings: { required: false, min: 0, max: 1 } },
       },
       {
         id: "chico",
         name: "Chico (1/2 litro)",
         price: 110,
-        groupRules: { toppings: { required: true, min: 2, max: 2 } },
+        groupRules: { toppings: { required: false, min: 0, max: 2 } },
       },
       {
         id: "grande",
@@ -184,7 +184,7 @@ export const menu: MenuProduct[] = [
           price: 65,
           groupRules: {
             frutas: { required: true, min: 2, max: 4 },
-            toppings: { required: true, min: 1, max: 1 },
+            toppings: { required: false, min: 0, max: 1 },
           },
         },
         {
@@ -193,7 +193,7 @@ export const menu: MenuProduct[] = [
           price: 105,
           groupRules: {
             frutas: { required: true, min: 2, max: 4 },
-            toppings: { required: true, min: 2, max: 2 },
+            toppings: { required: false, min: 0, max: 2 },
           },
         },
         {
@@ -236,7 +236,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
-        group("toppings", "Elige 1 topping", toppings, 1, 1, true),
+        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
       ],
     },
   ),
@@ -268,7 +268,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
-        group("toppings", "Elige 1 topping", toppings, 1, 1, true),
+        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
       ],
     },
   ),
@@ -288,8 +288,8 @@ export const menu: MenuProduct[] = [
         price: 65,
         groupRules: {
           frutas: { min: 1, max: 1 },
-          toppings: { min: 1, max: 1 },
-          jarabes: { min: 1, max: 1 },
+          toppings: { required: false, min: 0, max: 1 },
+          jarabes: { required: false, min: 0, max: 1 },
         },
       },
       {
@@ -298,8 +298,8 @@ export const menu: MenuProduct[] = [
         price: 75,
         groupRules: {
           frutas: { min: 2, max: 2 },
-          toppings: { min: 2, max: 2 },
-          jarabes: { min: 2, max: 2 },
+          toppings: { required: false, min: 0, max: 2 },
+          jarabes: { required: false, min: 0, max: 2 },
         },
       },
       {
@@ -308,8 +308,8 @@ export const menu: MenuProduct[] = [
         price: 90,
         groupRules: {
           frutas: { min: 3, max: 3 },
-          toppings: { min: 3, max: 3 },
-          jarabes: { min: 3, max: 3 },
+          toppings: { required: false, min: 0, max: 3 },
+          jarabes: { required: false, min: 0, max: 3 },
         },
       },
       {
@@ -340,8 +340,8 @@ export const menu: MenuProduct[] = [
         price: 70,
         groupRules: {
           frutas: { min: 1, max: 1 },
-          toppings: { min: 1, max: 1 },
-          jarabes: { min: 1, max: 1 },
+          toppings: { required: false, min: 0, max: 1 },
+          jarabes: { required: false, min: 0, max: 1 },
         },
       },
       {
@@ -350,8 +350,8 @@ export const menu: MenuProduct[] = [
         price: 85,
         groupRules: {
           frutas: { min: 2, max: 2 },
-          toppings: { min: 2, max: 2 },
-          jarabes: { min: 2, max: 2 },
+          toppings: { required: false, min: 0, max: 2 },
+          jarabes: { required: false, min: 0, max: 2 },
         },
       },
       {
@@ -360,8 +360,8 @@ export const menu: MenuProduct[] = [
         price: 100,
         groupRules: {
           frutas: { min: 3, max: 3 },
-          toppings: { min: 3, max: 3 },
-          jarabes: { min: 3, max: 3 },
+          toppings: { required: false, min: 0, max: 3 },
+          jarabes: { required: false, min: 0, max: 3 },
         },
       },
       {
@@ -382,13 +382,13 @@ export const menu: MenuProduct[] = [
     "waffle-tradicional",
     "dulces",
     "Waffle tradicional",
-    "Con 2 frutas, 1 topping y 1 jarabe.",
+    "Con 2 frutas, y toppings o jarabes opcionales.",
     90,
     {
       groups: [
         group("frutas", "Elige 2 frutas", frutasDulces, 2, 2, true),
-        group("toppings", "Elige 1 topping", toppings, 1, 1, true),
-        group("jarabes", "Elige 1 jarabe", jarabes, 1, 1, true),
+        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
+        group("jarabes", "Elige hasta 1 jarabe", jarabes, 0, 1, false),
         group("extras", "Extras opcionales", extrasDulces, 0, extrasDulces.length, false),
       ],
     },
@@ -432,14 +432,14 @@ export const menu: MenuProduct[] = [
     ["alitas", "Alitas", 85, true],
     ["nachos", "Nachos", 45, false],
     ["tenders", "Tenders", 95, true],
-    ["nuggets", "Nuggets", 80, false],
+    ["nuggets", "Nuggets", 80, true],
     ["boneless", "Boneless", 95, true],
     ["salchipapas", "Salchipapas", 70, false],
     ["aros-cebolla", "Aros de cebolla", 50, false],
     ["papas-gajo", "Papas Gajo", 65, false],
     ["salchipulpos", "Salchipulpos", 50, false],
     ["dedos-queso", "Dedos de queso", 85, false],
-    ["palomitas-pollo", "Palomitas de pollo", 80, false],
+    ["palomitas-pollo", "Palomitas de pollo", 80, true],
     ["papas-francesa", "Papas a la francesa", 55, false],
     ["hamburguesa-tenders", "Hamburguesa de Tenders", 120, true],
     ["hamburguesa-boneless", "Hamburguesa de Boneless", 125, true],
@@ -449,6 +449,22 @@ export const menu: MenuProduct[] = [
       groups: [
         ...(needsSauce
           ? [group("salsa", "Elige una salsa", salsas, 1, 1, true)]
+          : []),
+        ...(id === "papas-francesa"
+          ? [
+              group(
+                "acompanamientos-papas",
+                "¿Qué le agregamos a tus papas?",
+                [
+                  option("catsup", "Catsup"),
+                  option("queso", "Queso"),
+                  option("salsa", "Salsa"),
+                ],
+                0,
+                3,
+                false,
+              ),
+            ]
           : []),
         group("extras", "Extras opcionales", extrasSnacks, 0, extrasSnacks.length, false),
       ],
@@ -474,7 +490,7 @@ export const menu: MenuProduct[] = [
     "combo-familiar",
     "snacks-calientes",
     "Combo Familiar",
-    "Alitas, boneless y papas.",
+    "Alitas, boneless y una orden completa de papas a la francesa incluida.",
     225,
     {
       groups: [
@@ -588,6 +604,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
+        group("salsa", "Elige una salsa", salsas, 1, 1, true),
       ],
     },
   ),

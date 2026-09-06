@@ -78,6 +78,7 @@ export const extrasSnacks: ProductOption[] = [
   { id: "ranch-chico", name: "Ranch chico", price: 5 },
   { id: "ranch-grande", name: "Ranch grande", price: 15 },
   { id: "media-orden-papas", name: "Media orden de papas", price: 20 },
+  { id: "orden-completa-papas", name: "Orden completa de papas", price: 55 },
 ];
 
 export const ingredientesSalados = zeroPrice([
