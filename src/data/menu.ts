@@ -1,6 +1,7 @@
 import type { MenuProduct, ProductOption } from "../types/product";
 import {
   complementosSalados,
+  extrasAlitasBoneless,
   extrasCrema,
   extrasDulces,
   extrasSnacks,
@@ -184,7 +185,7 @@ export const menu: MenuProduct[] = [
           price: 65,
           groupRules: {
             frutas: { required: true, min: 2, max: 4 },
-            toppings: { required: false, min: 0, max: 1 },
+            toppings: { required: true, min: 1, max: 1 },
           },
         },
         {
@@ -193,7 +194,7 @@ export const menu: MenuProduct[] = [
           price: 105,
           groupRules: {
             frutas: { required: true, min: 2, max: 4 },
-            toppings: { required: false, min: 0, max: 2 },
+            toppings: { required: true, min: 2, max: 2 },
           },
         },
         {
@@ -236,7 +237,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
-        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
+        group("toppings", "Elige 1 topping (opcional)", toppings, 0, 1, false),
       ],
     },
   ),
@@ -268,7 +269,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
-        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
+        group("toppings", "Elige 1 topping (opcional)", toppings, 0, 1, false),
       ],
     },
   ),
@@ -288,8 +289,8 @@ export const menu: MenuProduct[] = [
         price: 65,
         groupRules: {
           frutas: { min: 1, max: 1 },
-          toppings: { required: false, min: 0, max: 1 },
-          jarabes: { required: false, min: 0, max: 1 },
+          toppings: { min: 0, max: 1 },
+          jarabes: { min: 0, max: 1 },
         },
       },
       {
@@ -298,8 +299,8 @@ export const menu: MenuProduct[] = [
         price: 75,
         groupRules: {
           frutas: { min: 2, max: 2 },
-          toppings: { required: false, min: 0, max: 2 },
-          jarabes: { required: false, min: 0, max: 2 },
+          toppings: { min: 0, max: 2 },
+          jarabes: { min: 0, max: 2 },
         },
       },
       {
@@ -308,8 +309,8 @@ export const menu: MenuProduct[] = [
         price: 90,
         groupRules: {
           frutas: { min: 3, max: 3 },
-          toppings: { required: false, min: 0, max: 3 },
-          jarabes: { required: false, min: 0, max: 3 },
+          toppings: { min: 0, max: 3 },
+          jarabes: { min: 0, max: 3 },
         },
       },
       {
@@ -340,8 +341,8 @@ export const menu: MenuProduct[] = [
         price: 70,
         groupRules: {
           frutas: { min: 1, max: 1 },
-          toppings: { required: false, min: 0, max: 1 },
-          jarabes: { required: false, min: 0, max: 1 },
+          toppings: { min: 0, max: 1 },
+          jarabes: { min: 0, max: 1 },
         },
       },
       {
@@ -350,8 +351,8 @@ export const menu: MenuProduct[] = [
         price: 85,
         groupRules: {
           frutas: { min: 2, max: 2 },
-          toppings: { required: false, min: 0, max: 2 },
-          jarabes: { required: false, min: 0, max: 2 },
+          toppings: { min: 0, max: 2 },
+          jarabes: { min: 0, max: 2 },
         },
       },
       {
@@ -360,8 +361,8 @@ export const menu: MenuProduct[] = [
         price: 100,
         groupRules: {
           frutas: { min: 3, max: 3 },
-          toppings: { required: false, min: 0, max: 3 },
-          jarabes: { required: false, min: 0, max: 3 },
+          toppings: { min: 0, max: 3 },
+          jarabes: { min: 0, max: 3 },
         },
       },
       {
@@ -382,13 +383,13 @@ export const menu: MenuProduct[] = [
     "waffle-tradicional",
     "dulces",
     "Waffle tradicional",
-    "Con 2 frutas, y toppings o jarabes opcionales.",
+    "Con 2 frutas, 1 topping y 1 jarabe.",
     90,
     {
       groups: [
         group("frutas", "Elige 2 frutas", frutasDulces, 2, 2, true),
-        group("toppings", "Elige hasta 1 topping", toppings, 0, 1, false),
-        group("jarabes", "Elige hasta 1 jarabe", jarabes, 0, 1, false),
+        group("toppings", "Elige 1 topping (opcional)", toppings, 0, 1, false),
+        group("jarabes", "Elige 1 jarabe", jarabes, 1, 1, true),
         group("extras", "Extras opcionales", extrasDulces, 0, extrasDulces.length, false),
       ],
     },
@@ -432,14 +433,14 @@ export const menu: MenuProduct[] = [
     ["alitas", "Alitas", 85, true],
     ["nachos", "Nachos", 45, false],
     ["tenders", "Tenders", 95, true],
-    ["nuggets", "Nuggets", 80, true],
+    ["nuggets", "Nuggets", 80, false],
     ["boneless", "Boneless", 95, true],
     ["salchipapas", "Salchipapas", 70, false],
     ["aros-cebolla", "Aros de cebolla", 50, false],
     ["papas-gajo", "Papas Gajo", 65, false],
     ["salchipulpos", "Salchipulpos", 50, false],
     ["dedos-queso", "Dedos de queso", 85, false],
-    ["palomitas-pollo", "Palomitas de pollo", 80, true],
+    ["palomitas-pollo", "Palomitas de pollo", 80, false],
     ["papas-francesa", "Papas a la francesa", 55, false],
     ["hamburguesa-tenders", "Hamburguesa de Tenders", 120, true],
     ["hamburguesa-boneless", "Hamburguesa de Boneless", 125, true],
@@ -447,14 +448,27 @@ export const menu: MenuProduct[] = [
     simple(String(id), "snacks-calientes", String(name), "Preparado al momento.", Number(price), {
       popular: id === "boneless",
       groups: [
-        ...(needsSauce
+        ...(needsSauce || id === "nuggets" || id === "palomitas-pollo"
           ? [group("salsa", "Elige una salsa", salsas, 1, 1, true)]
           : []),
+        ...(id === "alitas" || id === "boneless"
+          ? [
+              group(
+                "extras-papas",
+                "Opciones para agregar",
+                extrasAlitasBoneless,
+                0,
+                1,
+                false,
+              ),
+            ]
+          : []),
+        group("extras", "Extras opcionales", extrasSnacks, 0, extrasSnacks.length, false),
         ...(id === "papas-francesa"
           ? [
               group(
-                "acompanamientos-papas",
-                "¿Qué le agregamos a tus papas?",
+                "papas-opciones",
+                "¿Cómo quieres tus papas?",
                 [
                   option("catsup", "Catsup"),
                   option("queso", "Queso"),
@@ -466,7 +480,6 @@ export const menu: MenuProduct[] = [
               ),
             ]
           : []),
-        group("extras", "Extras opcionales", extrasSnacks, 0, extrasSnacks.length, false),
       ],
     }),
   ),
@@ -490,12 +503,24 @@ export const menu: MenuProduct[] = [
     "combo-familiar",
     "snacks-calientes",
     "Combo Familiar",
-    "Alitas, boneless y una orden completa de papas a la francesa incluida.",
+    "Alitas, boneless y una orden completa de papas incluida.",
     225,
     {
       groups: [
         group("sabor-alitas", "Elige el sabor de las alitas", salsas, 1, 1, true),
         group("sabor-boneless", "Elige el sabor de los boneless", salsas, 1, 1, true),
+        group(
+          "papas-opciones",
+          "¿Cómo quieres la orden completa de papas incluida?",
+          [
+            option("catsup", "Catsup"),
+            option("queso", "Queso"),
+            option("salsa", "Salsa"),
+          ],
+          0,
+          3,
+          false,
+        ),
         group("extras", "Extras opcionales", extrasSnacks, 0, extrasSnacks.length, false),
       ],
     },
@@ -535,27 +560,27 @@ export const menu: MenuProduct[] = [
         ),
         group(
           "hotcakes-topping",
-          "Elige 1 topping para los mini hotcakes",
+          "Elige 1 topping para los mini hotcakes (opcional)",
           toppings,
+          0,
           1,
-          1,
-          true,
+          false,
         ),
         group(
           "hotcakes-jarabe",
-          "Elige 1 jarabe para los mini hotcakes",
+          "Elige 1 jarabe para los mini hotcakes (opcional)",
           jarabes,
+          0,
           1,
-          1,
-          true,
+          false,
         ),
         group(
           "fresas-topping",
-          "Elige 1 topping para las fresas con crema Mini",
+          "Elige 1 topping para las fresas con crema Mini (opcional)",
           toppings,
+          0,
           1,
-          1,
-          true,
+          false,
         ),
         group(
           "charola-ingredientes",
@@ -604,7 +629,7 @@ export const menu: MenuProduct[] = [
           1,
           true,
         ),
-        group("salsa", "Elige una salsa", salsas, 1, 1, true),
+        group("salsa-principal", "Elige una salsa para tus Nuggets o Palomitas", salsas, 1, 1, true),
       ],
     },
   ),
