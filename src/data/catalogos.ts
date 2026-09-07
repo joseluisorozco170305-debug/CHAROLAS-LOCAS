@@ -96,7 +96,7 @@ export const ingredientesSalados = zeroPrice([
   "Pepino",
   "Manzana",
   "Manzanas cubiertas",
-  "Uvas cubiertas"
+  "Uvas cubiertas",
   "Skwinkles",
   "Mangomita",
   "Tamborcito",
