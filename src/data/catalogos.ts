@@ -26,6 +26,7 @@ export const toppings = zeroPrice([
   "Conejito Turín",
   "Galleta María molida",
   "Chispas de chocolate",
+  "Chocokrispis",
 ]);
 
 export const frutasDulces = zeroPrice([
@@ -95,6 +96,7 @@ export const ingredientesSalados = zeroPrice([
   "Pepino",
   "Manzana",
   "Manzanas cubiertas",
+  "Uvas cubiertas"
   "Skwinkles",
   "Mangomita",
   "Tamborcito",
