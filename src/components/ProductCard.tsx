@@ -1,4 +1,4 @@
-import { Flame, Heart, Sparkles, WandSparkles } from "lucide-react";
+import { Flame, Heart, ShoppingCart, Sparkles } from "lucide-react";
 import type { MenuProduct } from "../types/product";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
 import { formatPrice } from "../utils/formatPrice";
@@ -175,8 +175,8 @@ export function ProductCard({
             onClick={() => onCustomize(product)}
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-fuchsia-500 px-5 py-3 text-sm font-black text-white shadow-[0_10px_22px_rgba(236,72,153,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(236,72,153,0.30)] active:translate-y-0"
           >
-            <WandSparkles size={16} />
-            Personalizar
+            Agregar
+            <ShoppingCart size={16} />
           </button>
         </div>
       </div>

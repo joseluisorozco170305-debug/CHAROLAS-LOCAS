@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { shippingZones } from "../data/envios";
 import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
 import { formatPrice } from "../utils/formatPrice";
+import { getNextOrderNumber } from "../utils/orderNumber";
 
 interface CartDrawerProps {
   open: boolean;
@@ -23,6 +24,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const [selectedZoneId, setSelectedZoneId] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<number | null>(null);
 
   const selectedZone = shippingZones.find(
     (zone) => zone.id === selectedZoneId,
@@ -32,7 +34,23 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     return null;
   }
 
-  const baseMessage = buildOrderMessage(items, subtotal, discount, total);
+  const handleReview = () => {
+    setOrderNumber((current) => current ?? getNextOrderNumber());
+    setConfirmOpen(true);
+  };
+
+  const handleClearCart = () => {
+    clearCart();
+    setOrderNumber(null);
+  };
+
+  const baseMessage = buildOrderMessage(
+    items,
+    subtotal,
+    discount,
+    total,
+    orderNumber ?? undefined,
+  );
 
   const isPickup = selectedZone?.id === "pickup";
 
@@ -233,7 +251,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               <button
                 type="button"
                 disabled={!items.length || !selectedZoneId}
-                onClick={() => setConfirmOpen(true)}
+                onClick={handleReview}
                 className="rounded-2xl bg-emerald-500 px-5 py-4 font-black text-white disabled:bg-slate-300"
               >
                 Revisar y enviar
@@ -244,7 +262,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   type="button"
                   onClick={() =>
                     window.confirm("¿Vaciar todo el pedido?") &&
-                    clearCart()
+                    handleClearCart()
                   }
                   className="text-sm font-bold text-red-500"
                 >
@@ -267,6 +285,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <h3 className="text-2xl font-black text-slate-900">
                   Revisa tu pedido
                 </h3>
+                {orderNumber && (
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    Pedido #{String(orderNumber).padStart(3, "0")}
+                  </p>
+                )}
               </div>
 
               <button

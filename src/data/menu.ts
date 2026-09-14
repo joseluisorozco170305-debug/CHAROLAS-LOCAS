@@ -288,9 +288,9 @@ export const menu: MenuProduct[] = [
         name: "Chica · 15 piezas",
         price: 65,
         groupRules: {
-          frutas: { min: 1, max: 1 },
-          toppings: { min: 0, max: 1 },
-          jarabes: { min: 0, max: 1 },
+          frutas: { required: false, min: 0, max: 1 },
+          toppings: { required: false, min: 0, max: 1 },
+          jarabes: { required: false, min: 0, max: 1 },
         },
       },
       {
@@ -298,9 +298,9 @@ export const menu: MenuProduct[] = [
         name: "Mediana · 18 piezas",
         price: 75,
         groupRules: {
-          frutas: { min: 2, max: 2 },
-          toppings: { min: 0, max: 2 },
-          jarabes: { min: 0, max: 2 },
+          frutas: { required: false, min: 0, max: 2 },
+          toppings: { required: false, min: 0, max: 2 },
+          jarabes: { required: false, min: 0, max: 2 },
         },
       },
       {
@@ -308,9 +308,9 @@ export const menu: MenuProduct[] = [
         name: "Grande · 22 piezas",
         price: 90,
         groupRules: {
-          frutas: { min: 3, max: 3 },
-          toppings: { min: 0, max: 3 },
-          jarabes: { min: 0, max: 3 },
+          frutas: { required: false, min: 0, max: 3 },
+          toppings: { required: false, min: 0, max: 3 },
+          jarabes: { required: false, min: 0, max: 3 },
         },
       },
       {
@@ -340,9 +340,9 @@ export const menu: MenuProduct[] = [
         name: "Chica · 15 piezas",
         price: 70,
         groupRules: {
-          frutas: { min: 1, max: 1 },
-          toppings: { min: 0, max: 1 },
-          jarabes: { min: 0, max: 1 },
+          frutas: { required: false, min: 0, max: 1 },
+          toppings: { required: false, min: 0, max: 1 },
+          jarabes: { required: false, min: 0, max: 1 },
         },
       },
       {
@@ -350,9 +350,9 @@ export const menu: MenuProduct[] = [
         name: "Mediana · 20 piezas",
         price: 85,
         groupRules: {
-          frutas: { min: 2, max: 2 },
-          toppings: { min: 0, max: 2 },
-          jarabes: { min: 0, max: 2 },
+          frutas: { required: false, min: 0, max: 2 },
+          toppings: { required: false, min: 0, max: 2 },
+          jarabes: { required: false, min: 0, max: 2 },
         },
       },
       {
@@ -360,9 +360,9 @@ export const menu: MenuProduct[] = [
         name: "Grande · 25 piezas",
         price: 100,
         groupRules: {
-          frutas: { min: 3, max: 3 },
-          toppings: { min: 0, max: 3 },
-          jarabes: { min: 0, max: 3 },
+          frutas: { required: false, min: 0, max: 3 },
+          toppings: { required: false, min: 0, max: 3 },
+          jarabes: { required: false, min: 0, max: 3 },
         },
       },
       {
