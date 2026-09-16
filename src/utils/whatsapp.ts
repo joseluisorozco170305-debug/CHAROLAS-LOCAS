@@ -12,12 +12,16 @@ export const buildOrderMessage = (
   discount: number,
   total: number,
   orderNumber?: number,
+  customerName?: string,
 ) => {
   const lines = [
     "🍓 *CHAROLAS LOCAS*",
     "",
     ...(orderNumber
       ? [`📋 *Pedido #${String(orderNumber).padStart(3, "0")}*`, ""]
+      : []),
+    ...(customerName?.trim()
+      ? [`👤 *Entregar a:* ${customerName.trim()}`, ""]
       : []),
     "Quiero hacer este pedido:",
     "",

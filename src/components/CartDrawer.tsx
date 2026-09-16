@@ -25,6 +25,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [selectedZoneId, setSelectedZoneId] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
+  const [customerName, setCustomerName] = useState("");
 
   const selectedZone = shippingZones.find(
     (zone) => zone.id === selectedZoneId,
@@ -42,6 +43,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const handleClearCart = () => {
     clearCart();
     setOrderNumber(null);
+    setCustomerName("");
   };
 
   const baseMessage = buildOrderMessage(
@@ -50,6 +52,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     discount,
     total,
     orderNumber ?? undefined,
+    customerName,
   );
 
   const isPickup = selectedZone?.id === "pickup";
@@ -194,6 +197,22 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
                 <h3 className="font-black text-slate-900">
+                  ¿A nombre de quién se entrega?
+                </h3>
+
+                <p className="mt-1 text-sm text-slate-600">
+                  Escribe el nombre de quien va a recibir el pedido.
+                </p>
+
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(event) => setCustomerName(event.target.value)}
+                  placeholder="Nombre completo"
+                  className="mt-3 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none"
+                />
+
+                <h3 className="mt-5 font-black text-slate-900">
                   ¿Cómo quieres recibir tu pedido?
                 </h3>
 
@@ -250,7 +269,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="mt-5 grid gap-3">
               <button
                 type="button"
-                disabled={!items.length || !selectedZoneId}
+                disabled={!items.length || !selectedZoneId || !customerName.trim()}
                 onClick={handleReview}
                 className="rounded-2xl bg-emerald-500 px-5 py-4 font-black text-white disabled:bg-slate-300"
               >
@@ -320,6 +339,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             </div>
 
             <div className="mt-5 space-y-2 rounded-2xl bg-slate-950 p-5 text-white">
+              <div className="flex justify-between gap-4">
+                <span>Entrega a</span>
+                <strong className="text-right">{customerName.trim()}</strong>
+              </div>
+
               <div className="flex justify-between gap-4">
                 <span>Entrega</span>
                 <strong className="text-right">
