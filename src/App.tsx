@@ -7,6 +7,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "./assets/logo-charolas-locas.png";
 import { CartDrawer } from "./components/CartDrawer";
 import { MenuSection } from "./components/MenuSection";
@@ -70,6 +71,9 @@ function App() {
             <a href="#contacto" className="font-bold text-slate-600 hover:text-pink-600">
               Contacto
             </a>
+            <Link to="/estatus" className="font-bold text-slate-600 hover:text-pink-600">
+              Estatus de pedido
+            </Link>
           </nav>
 
           <div className="flex gap-2">

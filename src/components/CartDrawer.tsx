@@ -4,7 +4,7 @@ import { useCart } from "../context/CartContext";
 import { shippingZones } from "../data/envios";
 import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
 import { formatPrice } from "../utils/formatPrice";
-import { getNextOrderNumber } from "../utils/orderNumber";
+import { crearPedido } from "../services/pedidosService";
 
 interface CartDrawerProps {
   open: boolean;
@@ -26,6 +26,10 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const [customerName, setCustomerName] = useState("");
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [createOrderError, setCreateOrderError] = useState<string | null>(
+    null,
+  );
 
   const selectedZone = shippingZones.find(
     (zone) => zone.id === selectedZoneId,
@@ -35,15 +39,39 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     return null;
   }
 
-  const handleReview = () => {
-    setOrderNumber((current) => current ?? getNextOrderNumber());
-    setConfirmOpen(true);
+  const handleReview = async () => {
+    if (orderNumber !== null) {
+      setConfirmOpen(true);
+      return;
+    }
+
+    setCreatingOrder(true);
+    setCreateOrderError(null);
+
+    try {
+      const pedido = await crearPedido({
+        nombreCliente: customerName.trim(),
+        items,
+        zonaEntrega: selectedZone?.zone ?? "",
+        total,
+      });
+
+      setOrderNumber(pedido.numero_pedido);
+      setConfirmOpen(true);
+    } catch {
+      setCreateOrderError(
+        "No se pudo registrar el pedido. Revisa tu conexión e intenta de nuevo.",
+      );
+    } finally {
+      setCreatingOrder(false);
+    }
   };
 
   const handleClearCart = () => {
     clearCart();
     setOrderNumber(null);
     setCustomerName("");
+    setCreateOrderError(null);
   };
 
   const baseMessage = buildOrderMessage(
@@ -69,6 +97,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     isPickup
       ? "Costo de envío: $0"
       : "Costo de envío pendiente de confirmación.",
+    "",
+    "Puedes consultar el estatus de tu pedido en la sección \"Estatus de pedido\" de nuestra página, con tu número de pedido.",
   ].join("\n");
 
   return (
@@ -266,14 +296,25 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               </div>
             </div>
 
+            {createOrderError && (
+              <p className="mt-3 rounded-2xl bg-red-50 p-3 text-sm font-bold text-red-600">
+                {createOrderError}
+              </p>
+            )}
+
             <div className="mt-5 grid gap-3">
               <button
                 type="button"
-                disabled={!items.length || !selectedZoneId || !customerName.trim()}
+                disabled={
+                  !items.length ||
+                  !selectedZoneId ||
+                  !customerName.trim() ||
+                  creatingOrder
+                }
                 onClick={handleReview}
                 className="rounded-2xl bg-emerald-500 px-5 py-4 font-black text-white disabled:bg-slate-300"
               >
-                Revisar y enviar
+                {creatingOrder ? "Registrando pedido..." : "Revisar y enviar"}
               </button>
 
               {items.length > 0 && (
