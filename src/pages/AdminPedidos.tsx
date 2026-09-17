@@ -29,6 +29,7 @@ export function AdminPedidos() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [pedidos, setPedidos] = useState<PedidoDB[]>([]);
+  const [verEntregados, setVerEntregados] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -144,6 +145,14 @@ export function AdminPedidos() {
     );
   }
 
+  const pedidosEntregados = pedidos.filter(
+    (pedido) => pedido.estatus === "entregado",
+  );
+  const pedidosPendientes = pedidos.filter(
+    (pedido) => pedido.estatus !== "entregado",
+  );
+  const pedidosVisibles = verEntregados ? pedidos : pedidosPendientes;
+
   return (
     <div className="min-h-screen bg-[#fff8fb] px-4 py-8 text-slate-900">
       <div className="mx-auto max-w-3xl">
@@ -160,12 +169,28 @@ export function AdminPedidos() {
           </button>
         </div>
 
+        {pedidosEntregados.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setVerEntregados((valor) => !valor)}
+            className="mt-4 text-sm font-bold text-pink-600"
+          >
+            {verEntregados
+              ? "Ocultar entregados"
+              : `Ver entregados (${pedidosEntregados.length})`}
+          </button>
+        )}
+
         <div className="mt-6 space-y-4">
-          {!pedidos.length && (
-            <p className="text-slate-500">Todavía no hay pedidos hoy.</p>
+          {!pedidosVisibles.length && (
+            <p className="text-slate-500">
+              {pedidos.length
+                ? "No hay pedidos pendientes, todos ya se entregaron."
+                : "Todavía no hay pedidos hoy."}
+            </p>
           )}
 
-          {pedidos.map((pedido) => (
+          {pedidosVisibles.map((pedido) => (
             <div
               key={pedido.id}
               className="rounded-3xl border border-pink-100 bg-white p-5"
