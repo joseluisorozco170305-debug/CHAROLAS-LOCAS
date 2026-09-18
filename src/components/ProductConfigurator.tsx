@@ -3,29 +3,35 @@ import { useMemo, useState } from "react";
 import { useCart } from "../context/CartContext";
 import {
   calculateNormalUnitPrice,
+  createConfigurationFromCartItem,
   createEmptyConfiguration,
   getResolvedRule,
   toggleOption,
   validateConfiguration,
 } from "../services/menuEngine";
 import { discountedPrice } from "../services/promotionEngine";
+import type { CartItem } from "../types/cart";
 import type { MenuProduct } from "../types/product";
 import { formatPrice } from "../utils/formatPrice";
 
 interface ProductConfiguratorProps {
   product: MenuProduct;
   onClose: () => void;
+  editingItem?: CartItem;
 }
 
 export function ProductConfigurator({
   product,
   onClose,
+  editingItem,
 }: ProductConfiguratorProps) {
   const [configuration, setConfiguration] = useState(() =>
-    createEmptyConfiguration(product),
+    editingItem
+      ? createConfigurationFromCartItem(product, editingItem)
+      : createEmptyConfiguration(product),
   );
 
-  const { addItem } = useCart();
+  const { addItem, updateItem } = useCart();
 
   const normalUnitPrice = useMemo(
     () => calculateNormalUnitPrice(product, configuration),
@@ -63,8 +69,8 @@ export function ProductConfigurator({
       }))
       .filter((selection) => selection.options.length > 0);
 
-    addItem({
-      id: crypto.randomUUID(),
+    const item: CartItem = {
+      id: editingItem?.id ?? crypto.randomUUID(),
       productId: product.id,
       productName: product.name,
       categoryId: product.categoryId,
@@ -76,7 +82,13 @@ export function ProductConfigurator({
       finalUnitPrice,
       subtotal: total,
       notes: configuration.notes,
-    });
+    };
+
+    if (editingItem) {
+      updateItem(editingItem.id, item);
+    } else {
+      addItem(item);
+    }
 
     onClose();
   };
@@ -92,6 +104,9 @@ export function ProductConfigurator({
       >
         <div className="sticky top-0 z-10 flex items-start justify-between border-b border-pink-100 bg-white/95 p-6 backdrop-blur">
           <div>
+            <p className="text-xs font-black uppercase tracking-wide text-pink-500">
+              {editingItem ? "Editando producto" : ""}
+            </p>
             <h3 className="text-2xl font-black text-slate-900">
               {product.name}
             </h3>
@@ -301,7 +316,7 @@ export function ProductConfigurator({
             onClick={addToCart}
             className="rounded-2xl bg-pink-600 px-6 py-4 font-black text-white shadow-lg shadow-pink-200 transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
           >
-            Agregar al pedido
+            {editingItem ? "Guardar cambios" : "Agregar al pedido"}
           </button>
         </div>
       </div>

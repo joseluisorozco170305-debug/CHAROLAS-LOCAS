@@ -40,7 +40,7 @@ export function FirstTimeSection() {
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="bg-white py-10">
+    <section className="bg-white py-14 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-[2rem] border border-pink-100 bg-gradient-to-br from-pink-50 via-white to-orange-50 shadow-xl shadow-pink-100/60">
           <button

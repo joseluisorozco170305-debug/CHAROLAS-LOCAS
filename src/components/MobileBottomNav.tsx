@@ -1,20 +1,55 @@
-import { Home, ListChecks, Menu, MessageCircle, ShoppingBag } from "lucide-react";
+import { Cookie, House, PackageSearch, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { whatsappUrl } from "../utils/whatsapp";
 
-interface Props { onOpenCart: () => void; }
+interface Props {
+  onOpenCart: () => void;
+}
 
 export function MobileBottomNav({ onOpenCart }: Props) {
   const { items } = useCart();
+
+  const itemClass =
+    "flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-slate-500 transition active:scale-95";
+
+  const badgeClass =
+    "grid h-9 w-9 place-items-center rounded-2xl bg-pink-50 text-slate-500 transition";
+
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-pink-100 bg-white/95 px-2 py-2 shadow-[0_-8px_24px_rgba(15,23,42,.08)] backdrop-blur md:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
-        <a href="#inicio" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-black text-slate-600"><Home size={20}/>Inicio</a>
-        <a href="#menu" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-black text-slate-600"><Menu size={20}/>Menú</a>
-        <button type="button" onClick={onOpenCart} className="relative flex flex-col items-center gap-1 rounded-xl bg-pink-50 px-2 py-2 text-xs font-black text-pink-700"><ShoppingBag size={20}/>Pedido{items.length>0&&<span className="absolute right-4 top-1 rounded-full bg-orange-500 px-1.5 text-[10px] text-white">{items.length}</span>}</button>
-        <Link to="/estatus" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-black text-slate-600"><ListChecks size={20}/>Estatus</Link>
-        <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-black text-emerald-600"><MessageCircle size={20}/>WhatsApp</a>
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
+        <a href="#inicio" className={itemClass}>
+          <span className={badgeClass}>
+            <House size={19} />
+          </span>
+          Inicio
+        </a>
+
+        <a href="#menu" className={itemClass}>
+          <span className={badgeClass}>
+            <Cookie size={19} />
+          </span>
+          Menú
+        </a>
+
+        <button type="button" onClick={onOpenCart} className={itemClass}>
+          <span className="relative grid h-9 w-9 place-items-center rounded-2xl bg-pink-600 text-white shadow-md shadow-pink-200">
+            <ShoppingBag size={19} />
+            {items.length > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-4 w-4 place-items-center rounded-full bg-orange-500 text-[10px] font-black text-white">
+                {items.length}
+              </span>
+            )}
+          </span>
+          <span className="text-pink-600">Pedido</span>
+        </button>
+
+        <Link to="/estatus" className={itemClass}>
+          <span className={badgeClass}>
+            <PackageSearch size={19} />
+          </span>
+          Estatus
+        </Link>
       </div>
     </nav>
   );

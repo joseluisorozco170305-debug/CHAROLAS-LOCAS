@@ -1,4 +1,5 @@
 import type { MenuProduct, ProductGroup } from "../types/product";
+import type { CartItem } from "../types/cart";
 
 export interface ProductConfiguration {
   sizeId?: string;
@@ -16,6 +17,22 @@ export const createEmptyConfiguration = (
   ),
   quantity: 1,
   notes: "",
+});
+
+export const createConfigurationFromCartItem = (
+  product: MenuProduct,
+  item: CartItem,
+): ProductConfiguration => ({
+  sizeId: item.sizeId,
+  selectedOptions: Object.fromEntries(
+    (product.groups ?? []).map((group) => [
+      group.id,
+      item.selections.find((selection) => selection.groupId === group.id)
+        ?.options.map((option) => option.id) ?? [],
+    ]),
+  ),
+  quantity: item.quantity,
+  notes: item.notes ?? "",
 });
 
 export const getResolvedRule = (

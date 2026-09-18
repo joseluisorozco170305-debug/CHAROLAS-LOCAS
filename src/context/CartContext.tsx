@@ -16,6 +16,7 @@ interface CartValue {
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateItem: (id: string, item: CartItem) => void;
   clearCart: () => void;
   lastAddedName: string | null;
   clearLastAdded: () => void;
@@ -74,6 +75,10 @@ export function CartProvider({ children }: PropsWithChildren) {
             const safeQuantity = Math.max(1, quantity);
             return { ...item, quantity: safeQuantity, subtotal: item.finalUnitPrice * safeQuantity };
           }),
+        ),
+      updateItem: (id, item) =>
+        setItems((current) =>
+          current.map((existing) => (existing.id === id ? item : existing)),
         ),
       clearCart: () => setItems([]),
       lastAddedName,
