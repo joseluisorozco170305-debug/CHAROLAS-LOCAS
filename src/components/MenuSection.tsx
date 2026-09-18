@@ -7,8 +7,8 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { categorias } from "../data/categorias";
-import { menu } from "../data/menu";
 import { useFavorites } from "../hooks/useFavorites";
+import { useMenuConPrecios } from "../hooks/useMenuConPrecios";
 import type { MenuProduct } from "../types/product";
 import { ProductCard } from "./ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
@@ -70,6 +70,7 @@ const productSearchText = (product: MenuProduct) => {
 };
 
 export function MenuSection() {
+  const menu = useMenuConPrecios();
   const [category, setCategory] = useState("todos");
   const [drinkSection, setDrinkSection] = useState("frappes");
   const [search, setSearch] = useState("");
@@ -102,7 +103,7 @@ export function MenuSection() {
 
       return categoryMatches && drinkSectionMatches && searchMatches;
     });
-  }, [category, drinkSection, favoriteIds, normalizedSearch]);
+  }, [menu, category, drinkSection, favoriteIds, normalizedSearch]);
 
   const featuredProducts = menu
     .filter((product) => product.featured || product.popular)
@@ -116,7 +117,7 @@ export function MenuSection() {
         productSearchText(product).includes(normalizedSearch),
       )
       .slice(0, 5);
-  }, [normalizedSearch]);
+  }, [menu, normalizedSearch]);
 
   const iconForCategory = (categoryId: string) =>
     categorias.find((item) => item.id === categoryId)?.icono ?? "🍽️";

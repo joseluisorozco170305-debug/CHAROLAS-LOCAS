@@ -67,6 +67,22 @@ export const listarPedidosDeHoy = async (): Promise<PedidoDB[]> => {
   return (data as PedidoDB[]) ?? [];
 };
 
+export const listarPedidosPorFecha = async (
+  fecha: string,
+): Promise<PedidoDB[]> => {
+  const { data, error } = await supabase
+    .from("pedidos")
+    .select("*")
+    .eq("fecha", fecha)
+    .order("numero_pedido", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data as PedidoDB[]) ?? [];
+};
+
 export const actualizarEstatusPedido = async (
   id: string,
   estatus: EstatusPedido,

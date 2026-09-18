@@ -2,34 +2,24 @@ import { Home, LogOut } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import {
-  actualizarEstatusPedido,
-  listarPedidosDeHoy,
-  suscribirseATodosLosPedidos,
-} from "../services/pedidosService";
-import type { EstatusPedido, PedidoDB } from "../types/pedido";
+import { EditarProductos } from "./admin/EditarProductos";
+import { HistorialPedidos } from "./admin/HistorialPedidos";
+import { PedidosHoy } from "./admin/PedidosHoy";
 
-const estatusOrden: EstatusPedido[] = [
-  "recibido",
-  "preparando",
-  "listo",
-  "entregado",
+type Pestana = "hoy" | "historial" | "productos";
+
+const pestanas: { id: Pestana; label: string }[] = [
+  { id: "hoy", label: "Pedidos de hoy" },
+  { id: "historial", label: "Historial" },
+  { id: "productos", label: "Productos" },
 ];
-
-const etiquetas: Record<EstatusPedido, string> = {
-  recibido: "Recibido",
-  preparando: "Preparando",
-  listo: "Listo",
-  entregado: "Entregado",
-};
 
 export function AdminPedidos() {
   const [sesionIniciada, setSesionIniciada] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [pedidos, setPedidos] = useState<PedidoDB[]>([]);
-  const [verEntregados, setVerEntregados] = useState(false);
+  const [pestana, setPestana] = useState<Pestana>("hoy");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -45,24 +35,6 @@ export function AdminPedidos() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!sesionIniciada) {
-      return;
-    }
-
-    const cargar = () => {
-      listarPedidosDeHoy()
-        .then(setPedidos)
-        .catch(() => {});
-    };
-
-    cargar();
-
-    const cancelar = suscribirseATodosLosPedidos(cargar);
-
-    return cancelar;
-  }, [sesionIniciada]);
-
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setLoginError(null);
@@ -74,17 +46,6 @@ export function AdminPedidos() {
 
     if (error) {
       setLoginError("Correo o contraseña incorrectos.");
-    }
-  };
-
-  const handleCambiarEstatus = async (
-    pedido: PedidoDB,
-    nuevoEstatus: EstatusPedido,
-  ) => {
-    try {
-      await actualizarEstatusPedido(pedido.id, nuevoEstatus);
-    } catch {
-      window.alert("No se pudo actualizar el estatus. Intenta de nuevo.");
     }
   };
 
@@ -101,7 +62,7 @@ export function AdminPedidos() {
         >
           <h1 className="text-2xl font-black">Acceso del equipo</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Inicia sesión para actualizar el estatus de los pedidos.
+            Inicia sesión para administrar pedidos y productos.
           </p>
 
           <input
@@ -145,19 +106,11 @@ export function AdminPedidos() {
     );
   }
 
-  const pedidosEntregados = pedidos.filter(
-    (pedido) => pedido.estatus === "entregado",
-  );
-  const pedidosPendientes = pedidos.filter(
-    (pedido) => pedido.estatus !== "entregado",
-  );
-  const pedidosVisibles = verEntregados ? pedidos : pedidosPendientes;
-
   return (
     <div className="min-h-screen bg-[#fff8fb] px-4 py-8 text-slate-900">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-black">Pedidos de hoy</h1>
+          <h1 className="text-2xl font-black">Panel de Charolas Locas</h1>
 
           <button
             type="button"
@@ -169,66 +122,27 @@ export function AdminPedidos() {
           </button>
         </div>
 
-        {pedidosEntregados.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setVerEntregados((valor) => !valor)}
-            className="mt-4 text-sm font-bold text-pink-600"
-          >
-            {verEntregados
-              ? "Ocultar entregados"
-              : `Ver entregados (${pedidosEntregados.length})`}
-          </button>
-        )}
-
-        <div className="mt-6 space-y-4">
-          {!pedidosVisibles.length && (
-            <p className="text-slate-500">
-              {pedidos.length
-                ? "No hay pedidos pendientes, todos ya se entregaron."
-                : "Todavía no hay pedidos hoy."}
-            </p>
-          )}
-
-          {pedidosVisibles.map((pedido) => (
-            <div
-              key={pedido.id}
-              className="rounded-3xl border border-pink-100 bg-white p-5"
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+          {pestanas.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setPestana(item.id)}
+              className={`shrink-0 rounded-full px-4 py-2 text-sm font-black ${
+                pestana === item.id
+                  ? "bg-pink-600 text-white"
+                  : "bg-white text-slate-600 ring-1 ring-pink-100"
+              }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-black">
-                    Pedido #{String(pedido.numero_pedido).padStart(3, "0")}
-                  </p>
-                  <p className="text-sm text-slate-600">
-                    {pedido.nombre_cliente}
-                  </p>
-                </div>
-
-                <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-black text-pink-700">
-                  {etiquetas[pedido.estatus]}
-                </span>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {estatusOrden.map((estatus) => (
-                  <button
-                    key={estatus}
-                    type="button"
-                    onClick={() => handleCambiarEstatus(pedido, estatus)}
-                    disabled={pedido.estatus === estatus}
-                    className={`rounded-xl px-3 py-2 text-sm font-bold ${
-                      pedido.estatus === estatus
-                        ? "bg-emerald-500 text-white"
-                        : "bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    {etiquetas[estatus]}
-                  </button>
-                ))}
-              </div>
-            </div>
+              {item.label}
+            </button>
           ))}
+        </div>
+
+        <div className="mt-6">
+          {pestana === "hoy" && <PedidosHoy />}
+          {pestana === "historial" && <HistorialPedidos />}
+          {pestana === "productos" && <EditarProductos />}
         </div>
       </div>
     </div>
