@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { listarPedidosPorFecha } from "../../services/pedidosService";
+import { fechaMexicoISO } from "../../utils/fecha";
 import type { EstatusPedido, PedidoDB } from "../../types/pedido";
 
 const etiquetas: Record<EstatusPedido, string> = {
@@ -9,7 +10,7 @@ const etiquetas: Record<EstatusPedido, string> = {
   entregado: "Entregado",
 };
 
-const hoyISO = () => new Date().toISOString().slice(0, 10);
+const hoyISO = () => fechaMexicoISO();
 
 export function HistorialPedidos() {
   const [fecha, setFecha] = useState(hoyISO());

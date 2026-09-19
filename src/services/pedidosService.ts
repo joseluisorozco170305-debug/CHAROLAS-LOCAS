@@ -1,8 +1,9 @@
 import { supabase } from "../lib/supabaseClient";
+import { fechaMexicoISO } from "../utils/fecha";
 import type { CartItem } from "../types/cart";
 import type { EstatusPedido, PedidoDB } from "../types/pedido";
 
-const hoyISO = () => new Date().toISOString().slice(0, 10);
+const hoyISO = () => fechaMexicoISO();
 
 interface CrearPedidoInput {
   nombreCliente: string;
