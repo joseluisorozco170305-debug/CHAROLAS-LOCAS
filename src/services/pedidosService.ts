@@ -9,6 +9,9 @@ interface CrearPedidoInput {
   nombreCliente: string;
   items: CartItem[];
   zonaEntrega: string;
+  ubicacionUrl?: string | null;
+  codigoDescuento?: string | null;
+  descuentoCodigo?: number | null;
   total: number;
 }
 
@@ -21,6 +24,9 @@ export const crearPedido = async ({
   nombreCliente,
   items,
   zonaEntrega,
+  ubicacionUrl,
+  codigoDescuento,
+  descuentoCodigo,
   total,
 }: CrearPedidoInput): Promise<PedidoDB> => {
   const { data, error } = await supabase.rpc("crear_pedido", {
@@ -28,6 +34,9 @@ export const crearPedido = async ({
     p_items: items,
     p_zona: zonaEntrega,
     p_total: total,
+    p_ubicacion_url: ubicacionUrl ?? null,
+    p_codigo_descuento: codigoDescuento ?? null,
+    p_descuento_codigo: descuentoCodigo ?? null,
   });
 
   if (error || !data) {
@@ -35,23 +44,6 @@ export const crearPedido = async ({
   }
 
   return data as PedidoDB;
-};
-
-export const buscarPedidoDeHoy = async (
-  numeroPedido: number,
-): Promise<PedidoDB | null> => {
-  const { data, error } = await supabase
-    .from("pedidos")
-    .select("*")
-    .eq("numero_pedido", numeroPedido)
-    .eq("fecha", hoyISO())
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return (data as PedidoDB) ?? null;
 };
 
 export const listarPedidosDeHoy = async (): Promise<PedidoDB[]> => {
@@ -96,34 +88,6 @@ export const actualizarEstatusPedido = async (
   if (error) {
     throw error;
   }
-};
-
-/**
- * Se suscribe a los cambios de UN pedido específico (para la página
- * pública de estatus, que se actualiza sola cuando el negocio cambia
- * el estatus).
- */
-export const suscribirseAPedido = (
-  pedidoId: string,
-  onChange: (pedido: PedidoDB) => void,
-) => {
-  const channel = supabase
-    .channel(`pedido-${pedidoId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "UPDATE",
-        schema: "public",
-        table: "pedidos",
-        filter: `id=eq.${pedidoId}`,
-      },
-      (payload) => onChange(payload.new as PedidoDB),
-    )
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
 };
 
 /**

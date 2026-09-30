@@ -2,14 +2,15 @@ import {
   AlertTriangle,
   Heart,
   Search,
-  Sparkles,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { categorias } from "../data/categorias";
 import { useFavorites } from "../hooks/useFavorites";
 import { useMenuConPrecios } from "../hooks/useMenuConPrecios";
 import type { MenuProduct } from "../types/product";
+import { MENU_CATEGORY_EVENT } from "../utils/menuEvents";
+import { DiscountCodeBox } from "./DiscountCodeBox";
 import { ProductCard } from "./ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
 
@@ -85,6 +86,27 @@ export function MenuSection() {
 
   const normalizedSearch = normalize(search.trim());
 
+  // Permite que las promos abran una categoría del menú (ej. Pan de Muerto).
+  useEffect(() => {
+    const onCategory = (event: Event) => {
+      const id = (event as CustomEvent<string>).detail;
+      setCategory(id);
+      setSearch("");
+    };
+
+    window.addEventListener(MENU_CATEGORY_EVENT, onCategory);
+    return () => window.removeEventListener(MENU_CATEGORY_EVENT, onCategory);
+  }, []);
+
+  // Solo se muestran categorías que tengan productos vigentes (temporada).
+  const visibleCategories = useMemo(
+    () =>
+      categorias.filter((item) =>
+        menu.some((product) => product.categoryId === item.id),
+      ),
+    [menu],
+  );
+
   const products = useMemo(() => {
     return menu.filter((product) => {
       const categoryMatches =
@@ -104,10 +126,6 @@ export function MenuSection() {
       return categoryMatches && drinkSectionMatches && searchMatches;
     });
   }, [menu, category, drinkSection, favoriteIds, normalizedSearch]);
-
-  const featuredProducts = menu
-    .filter((product) => product.featured || product.popular)
-    .slice(0, 5);
 
   const suggestions = useMemo(() => {
     if (!normalizedSearch) return [];
@@ -140,36 +158,6 @@ export function MenuSection() {
           <p className="mt-3 text-base font-semibold text-rose-950/60 sm:text-lg">
             Busca por nombre, categoría, descripción o ingrediente.
           </p>
-        </div>
-
-        <div className="mb-10 rounded-[2rem] border border-pink-100 bg-gradient-to-r from-rose-50 via-pink-50 to-fuchsia-50 p-5 shadow-[0_14px_35px_rgba(244,114,182,0.10)] sm:p-6">
-          <div className="flex items-center gap-2">
-            <Sparkles size={20} className="text-orange-500" />
-            <h3 className="soft-heading text-xl font-black text-rose-950">
-              Los más pedidos
-            </h3>
-          </div>
-
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-            {featuredProducts.map((product) => (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => setSelectedProduct(product)}
-                className="min-w-52 rounded-[1.35rem] border border-white bg-white/90 p-4 text-left shadow-[0_8px_20px_rgba(244,114,182,0.09)] transition hover:-translate-y-1 hover:border-pink-100 hover:shadow-[0_12px_26px_rgba(244,114,182,0.14)]"
-              >
-                <span className="text-2xl">
-                  {iconForCategory(product.categoryId)}
-                </span>
-                <p className="soft-heading mt-2 font-extrabold text-rose-950">
-                  {product.name}
-                </p>
-                <p className="mt-1 text-xs font-extrabold text-pink-500">
-                  Ver opciones
-                </p>
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="relative mx-auto mb-8 max-w-3xl">
@@ -257,7 +245,7 @@ export function MenuSection() {
             </button>
           )}
 
-          {categorias.map((item) => (
+          {visibleCategories.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -369,6 +357,8 @@ export function MenuSection() {
             </div>
           </div>
         )}
+
+        <DiscountCodeBox />
       </div>
 
       {selectedProduct && (

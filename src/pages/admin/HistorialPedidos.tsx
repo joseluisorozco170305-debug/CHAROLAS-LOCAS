@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listarPedidosPorFecha } from "../../services/pedidosService";
 import { fechaMexicoISO } from "../../utils/fecha";
+import { BotonDesplegar, DetallePedido } from "./DetallePedido";
 import type { EstatusPedido, PedidoDB } from "../../types/pedido";
 
 const etiquetas: Record<EstatusPedido, string> = {
@@ -17,10 +18,15 @@ export function HistorialPedidos() {
   const [pedidos, setPedidos] = useState<PedidoDB[]>([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
+
+  const alternar = (id: string) =>
+    setAbiertos((actual) => ({ ...actual, [id]: !actual[id] }));
 
   useEffect(() => {
     setCargando(true);
     setError(null);
+    setAbiertos({});
 
     listarPedidosPorFecha(fecha)
       .then(setPedidos)
@@ -60,7 +66,12 @@ export function HistorialPedidos() {
                 key={pedido.id}
                 className="rounded-2xl border border-pink-100 bg-white p-4"
               >
-                <div className="flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => alternar(pedido.id)}
+                  aria-expanded={!!abiertos[pedido.id]}
+                  className="flex w-full items-center justify-between gap-3 text-left"
+                >
                   <div>
                     <p className="font-black">
                       Pedido #{String(pedido.numero_pedido).padStart(3, "0")}
@@ -82,7 +93,11 @@ export function HistorialPedidos() {
                       ${Number(pedido.total).toFixed(2)}
                     </p>
                   </div>
-                </div>
+
+                  <BotonDesplegar abierto={!!abiertos[pedido.id]} />
+                </button>
+
+                {abiertos[pedido.id] && <DetallePedido pedido={pedido} />}
               </div>
             ))}
 

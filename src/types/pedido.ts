@@ -7,6 +7,9 @@ export interface PedidoDB {
   nombre_cliente: string;
   items: unknown;
   zona_entrega: string | null;
+  ubicacion_url: string | null;
+  codigo_descuento: string | null;
+  descuento_codigo: number | null;
   total: number;
   estatus: EstatusPedido;
   created_at: string;

@@ -1,4 +1,5 @@
 export const categorias = [
+  { id: "pan-de-muerto", nombre: "Pan de Muerto", icono: "🌼" },
   { id: "todo-con-crema", nombre: "Todo con crema", icono: "🍓" },
   { id: "dulces", nombre: "Dulces", icono: "🧇" },
   { id: "frutas-saladas", nombre: "Frutas y verduras saladas", icono: "🥭" },

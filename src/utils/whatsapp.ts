@@ -13,6 +13,7 @@ export const buildOrderMessage = (
   total: number,
   orderNumber?: number,
   customerName?: string,
+  code?: { codigo: string; porcentaje: number; sobre: string; monto: number },
 ) => {
   const lines = [
     "🍓 *CHAROLAS LOCAS*",
@@ -52,7 +53,13 @@ export const buildOrderMessage = (
   lines.push(`Subtotal: ${formatPrice(subtotal)}`);
 
   if (discount > 0) {
-    lines.push(`Descuento: -${formatPrice(discount)}`);
+    lines.push(`Promoción del día: -${formatPrice(discount)}`);
+  }
+
+  if (code && code.monto > 0) {
+    lines.push(
+      `Código ${code.codigo} (${code.porcentaje}% sobre ${code.sobre}): -${formatPrice(code.monto)}`,
+    );
   }
 
   lines.push(`*TOTAL: ${formatPrice(total)}*`);

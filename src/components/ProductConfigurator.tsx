@@ -2,14 +2,14 @@ import { Minus, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useCart } from "../context/CartContext";
 import {
-  calculateNormalUnitPrice,
+  calculatePriceParts,
   createConfigurationFromCartItem,
   createEmptyConfiguration,
   getResolvedRule,
   toggleOption,
   validateConfiguration,
 } from "../services/menuEngine";
-import { discountedPrice } from "../services/promotionEngine";
+import { discountedPrice, discountPercent } from "../services/promotionEngine";
 import type { CartItem } from "../types/cart";
 import type { MenuProduct } from "../types/product";
 import { formatPrice } from "../utils/formatPrice";
@@ -33,12 +33,16 @@ export function ProductConfigurator({
 
   const { addItem, updateItem } = useCart();
 
-  const normalUnitPrice = useMemo(
-    () => calculateNormalUnitPrice(product, configuration),
+  const { base: baseUnitPrice, extras: extrasUnitPrice } = useMemo(
+    () => calculatePriceParts(product, configuration),
     [product, configuration],
   );
 
-  const finalUnitPrice = discountedPrice(normalUnitPrice, product.categoryId);
+  const normalUnitPrice = baseUnitPrice + extrasUnitPrice;
+  // El descuento aplica solo al producto; los extras se cobran completos.
+  const finalUnitPrice =
+    discountedPrice(baseUnitPrice, product.categoryId) + extrasUnitPrice;
+  const promoPercent = discountPercent(product.categoryId);
   const errors = validateConfiguration(product, configuration);
   const total = finalUnitPrice * configuration.quantity;
   const asksMangoAvailability =
@@ -78,6 +82,8 @@ export function ProductConfigurator({
       sizeName: size?.name,
       selections,
       quantity: configuration.quantity,
+      baseUnitPrice,
+      extrasUnitPrice,
       normalUnitPrice,
       finalUnitPrice,
       subtotal: total,
@@ -308,6 +314,11 @@ export function ProductConfigurator({
             <p className="text-2xl font-black text-pink-600">
               {formatPrice(total)}
             </p>
+            {promoPercent > 0 && (
+              <p className="text-[11px] font-bold text-slate-500">
+                {promoPercent}% aplicado al producto · extras a precio normal
+              </p>
+            )}
           </div>
 
           <button

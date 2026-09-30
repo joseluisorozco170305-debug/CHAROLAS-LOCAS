@@ -74,7 +74,12 @@ export const toggleOption = (
   return [...current, optionId];
 };
 
-export const calculateNormalUnitPrice = (
+/**
+ * Separa el precio en dos partes:
+ * - base: el producto (tamaño o precio base). Es lo único que recibe descuentos.
+ * - extras: opciones con costo (extras, complementos). Se cobran siempre completos.
+ */
+export const calculatePriceParts = (
   product: MenuProduct,
   config: ProductConfiguration,
 ) => {
@@ -82,15 +87,17 @@ export const calculateNormalUnitPrice = (
     (size) => size.id === config.sizeId,
   );
 
-  let total = selectedSize?.price ?? product.basePrice ?? 0;
+  const base = selectedSize?.price ?? product.basePrice ?? 0;
+
+  let extras = 0;
 
   for (const group of product.groups ?? []) {
     for (const id of config.selectedOptions[group.id] ?? []) {
-      total += group.options.find((option) => option.id === id)?.price ?? 0;
+      extras += group.options.find((option) => option.id === id)?.price ?? 0;
     }
   }
 
-  return total;
+  return { base, extras };
 };
 
 export const validateConfiguration = (

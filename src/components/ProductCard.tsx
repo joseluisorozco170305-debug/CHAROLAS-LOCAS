@@ -1,6 +1,7 @@
 import { Flame, Heart, ShoppingCart, Sparkles } from "lucide-react";
 import type { MenuProduct } from "../types/product";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
+import { fechaLarga } from "../utils/fecha";
 import { formatPrice } from "../utils/formatPrice";
 
 interface ProductCardProps {
@@ -19,6 +20,8 @@ const startingPrice = (product: MenuProduct) =>
 const productEmoji = (product: MenuProduct, fallback: string) => {
   const id = product.id.toLowerCase();
   const name = product.name.toLocaleLowerCase("es-MX");
+
+  if (id === "pan-de-muerto") return "🍞";
 
   if (id.includes("fresa") || name.includes("fresa")) return "🍓";
   if (id.includes("uva") || name.includes("uva")) return "🍇";
@@ -144,6 +147,12 @@ export function ProductCard({
             <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-800">
               🥭 Preguntar por disponibilidad
             </div>
+          )}
+
+          {product.availableUntil && (
+            <p className="mt-2 inline-flex rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black text-amber-800">
+              ⏳ Por tiempo limitado · hasta el {fechaLarga(product.availableUntil)}
+            </p>
           )}
 
           <p className="mt-2 text-sm leading-6 text-rose-950/65">

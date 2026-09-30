@@ -5,6 +5,7 @@ import {
   suscribirseATodosLosPedidos,
 } from "../../services/pedidosService";
 import type { EstatusPedido, PedidoDB } from "../../types/pedido";
+import { BotonDesplegar, DetallePedido } from "./DetallePedido";
 
 const estatusOrden: EstatusPedido[] = [
   "recibido",
@@ -23,6 +24,10 @@ const etiquetas: Record<EstatusPedido, string> = {
 export function PedidosHoy() {
   const [pedidos, setPedidos] = useState<PedidoDB[]>([]);
   const [verEntregados, setVerEntregados] = useState(false);
+  const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
+
+  const alternar = (id: string) =>
+    setAbiertos((actual) => ({ ...actual, [id]: !actual[id] }));
 
   useEffect(() => {
     const cargar = () => {
@@ -85,7 +90,12 @@ export function PedidosHoy() {
             key={pedido.id}
             className="rounded-3xl border border-pink-100 bg-white p-5"
           >
-            <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => alternar(pedido.id)}
+              aria-expanded={!!abiertos[pedido.id]}
+              className="flex w-full items-center justify-between gap-3 text-left"
+            >
               <div>
                 <p className="font-black">
                   Pedido #{String(pedido.numero_pedido).padStart(3, "0")}
@@ -98,7 +108,11 @@ export function PedidosHoy() {
               <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-black text-pink-700">
                 {etiquetas[pedido.estatus]}
               </span>
-            </div>
+
+              <BotonDesplegar abierto={!!abiertos[pedido.id]} />
+            </button>
+
+            {abiertos[pedido.id] && <DetallePedido pedido={pedido} />}
 
             <div className="mt-4 flex flex-wrap gap-2">
               {estatusOrden.map((estatus) => (

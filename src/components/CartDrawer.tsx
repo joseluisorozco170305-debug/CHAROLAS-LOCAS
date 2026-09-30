@@ -1,14 +1,25 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Pencil, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import {
+  Check,
+  Minus,
+  Pencil,
+  Plus,
+  ShoppingBag,
+  Store,
+  Trash2,
+  Truck,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { categorias } from "../data/categorias";
-import { shippingZones } from "../data/envios";
 import { useMenuConPrecios } from "../hooks/useMenuConPrecios";
 import { crearPedido } from "../services/pedidosService";
 import type { CartItem } from "../types/cart";
 import { formatPrice } from "../utils/formatPrice";
 import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
+import { googleMapsLink, type Coords } from "../utils/ubicacion";
+import { LocationPicker } from "./LocationPicker";
 import { ProductConfigurator } from "./ProductConfigurator";
 
 interface CartDrawerProps {
@@ -23,8 +34,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const {
     items,
     subtotal,
-    discount,
+    promoDiscount,
+    codigo,
+    codeDiscount,
     total,
+    removeCode,
     removeItem,
     updateQuantity,
     clearCart,
@@ -32,81 +46,121 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const menu = useMenuConPrecios();
 
-  const [selectedZoneId, setSelectedZoneId] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState<
+    "pickup" | "delivery" | null
+  >(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const [customerName, setCustomerName] = useState("");
-  const [creatingOrder, setCreatingOrder] = useState(false);
-  const [createOrderError, setCreateOrderError] = useState<string | null>(
-    null,
-  );
+  const [coords, setCoords] = useState<Coords | null>(null);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [sentOrder, setSentOrder] = useState<{
+    numero: number;
+    url: string;
+  } | null>(null);
   const [editingItem, setEditingItem] = useState<CartItem | null>(null);
 
-  const selectedZone = shippingZones.find(
-    (zone) => zone.id === selectedZoneId,
-  );
+  const isPickup = deliveryMethod === "pickup";
+  const isDelivery = deliveryMethod === "delivery";
+  const locationUrl = coords ? googleMapsLink(coords) : "";
+  const deliveryLabel = isPickup
+    ? "Pick up · Recoger en el local"
+    : isDelivery
+      ? "Envío a domicilio"
+      : "";
 
-  const handleReview = async () => {
-    if (orderNumber !== null) {
-      setConfirmOpen(true);
-      return;
-    }
+  const buildFinalMessage = (orderNumber: number) =>
+    [
+      buildOrderMessage(
+        items,
+        subtotal,
+        promoDiscount,
+        total,
+        orderNumber,
+        customerName,
+        codigo
+          ? {
+              codigo: codigo.codigo,
+              porcentaje: codigo.porcentaje,
+              sobre: codigo.aplica_sobre === "producto" ? "productos" : "el total",
+              monto: codeDiscount,
+            }
+          : undefined,
+      ),
+      "",
+      `Método de entrega: ${deliveryLabel}`,
+      ...(isPickup
+        ? ["El cliente recogerá su pedido en el local.", "Costo de envío: $0"]
+        : [
+            `📍 Ubicación: ${locationUrl}`,
+            "Costo de envío pendiente de confirmación.",
+          ]),
+    ].join("\n");
 
-    setCreatingOrder(true);
-    setCreateOrderError(null);
+  const handleSend = async () => {
+    setSending(true);
+    setSendError(null);
+
+    // Se abre la pestaña antes de esperar al servidor para que el
+    // navegador no la bloquee como ventana emergente.
+    const popup = window.open("", "_blank");
 
     try {
       const pedido = await crearPedido({
         nombreCliente: customerName.trim(),
         items,
-        zonaEntrega: selectedZone?.zone ?? "",
+        zonaEntrega: deliveryLabel,
+        ubicacionUrl: isPickup ? null : locationUrl,
+        codigoDescuento: codigo?.codigo ?? null,
+        descuentoCodigo: codigo ? codeDiscount : null,
         total,
       });
 
-      setOrderNumber(pedido.numero_pedido);
-      setConfirmOpen(true);
+      const url = whatsappUrl(buildFinalMessage(pedido.numero_pedido));
+
+      if (popup) {
+        popup.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+
+      setSentOrder({ numero: pedido.numero_pedido, url });
+      clearCart();
     } catch {
-      setCreateOrderError(
+      popup?.close();
+      setSendError(
         "No se pudo registrar el pedido. Revisa tu conexión e intenta de nuevo.",
       );
     } finally {
-      setCreatingOrder(false);
+      setSending(false);
     }
   };
 
   const handleClearCart = () => {
     clearCart();
-    setOrderNumber(null);
-    setCustomerName("");
-    setCreateOrderError(null);
+    resetCheckout();
   };
 
-  const baseMessage = buildOrderMessage(
-    items,
-    subtotal,
-    discount,
-    total,
-    orderNumber ?? undefined,
-    customerName,
-  );
+  const resetCheckout = () => {
+    setDeliveryMethod(null);
+    setCustomerName("");
+    setCoords(null);
+    setSendError(null);
+  };
 
-  const isPickup = selectedZone?.id === "pickup";
+  const handleFinish = () => {
+    setConfirmOpen(false);
+    setSentOrder(null);
+    resetCheckout();
+    onClose();
+  };
 
-  const finalMessage = [
-    baseMessage,
-    "",
-    isPickup
-      ? "Método de entrega: Pick up · Recoger en el local"
-      : `Zona de envío: ${selectedZone?.zone ?? "No seleccionada"}`,
-    isPickup
-      ? "El cliente recogerá su pedido en el local."
-      : "El cliente enviará su ubicación por WhatsApp.",
-    isPickup
-      ? "Costo de envío: $0"
-      : "Costo de envío pendiente de confirmación.",
-    "",
-    "Puedes consultar el estatus de tu pedido en la sección \"Estatus de pedido\" de nuestra página, con tu número de pedido.",
-  ].join("\n");
+  const canSend =
+    items.length > 0 &&
+    !!customerName.trim() &&
+    !!deliveryMethod &&
+    (isPickup || !!coords) &&
+    !sending;
 
   const productoEnEdicion = editingItem
     ? menu.find((product) => product.id === editingItem.productId)
@@ -274,49 +328,6 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   </AnimatePresence>
                 )}
 
-                {items.length > 0 && (
-                  <div className="rounded-3xl border border-orange-100 bg-orange-50 p-5">
-                    <h3 className="font-black text-slate-900">
-                      ¿A nombre de quién se entrega?
-                    </h3>
-
-                    <p className="mt-1 text-sm text-slate-600">
-                      Escribe el nombre de quien va a recibir el pedido.
-                    </p>
-
-                    <input
-                      type="text"
-                      value={customerName}
-                      onChange={(event) => setCustomerName(event.target.value)}
-                      placeholder="Nombre completo"
-                      className="mt-3 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
-                    />
-
-                    <h3 className="mt-5 font-black text-slate-900">
-                      ¿Cómo quieres recibir tu pedido?
-                    </h3>
-
-                    <p className="mt-1 text-sm text-slate-600">
-                      Elige Pick up para recogerlo o selecciona tu zona para envío.
-                    </p>
-
-                    <select
-                      value={selectedZoneId}
-                      onChange={(event) =>
-                        setSelectedZoneId(event.target.value)
-                      }
-                      className="mt-3 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
-                    >
-                      <option value="">Selecciona una opción</option>
-
-                      {shippingZones.map((zone) => (
-                        <option key={zone.id} value={zone.id}>
-                          {zone.zone}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
 
               <footer className="border-t border-pink-100 bg-white p-5">
@@ -326,47 +337,43 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <strong>{formatPrice(subtotal)}</strong>
                   </div>
 
-                  {discount > 0 && (
+                  {promoDiscount > 0 && (
                     <div className="flex justify-between text-pink-600">
-                      <span>Descuento</span>
-                      <strong>-{formatPrice(discount)}</strong>
+                      <span>Promoción del día</span>
+                      <strong>-{formatPrice(promoDiscount)}</strong>
                     </div>
                   )}
 
-                  <div className="flex justify-between">
-                    <span>Entrega</span>
-                    <strong>
-                      {selectedZone?.id === "pickup"
-                        ? "Pick up · Sin costo"
-                        : "Envío pendiente"}
-                    </strong>
-                  </div>
+                  {codigo && (
+                    <div className="flex items-center justify-between gap-3 text-emerald-600">
+                      <span className="flex items-center gap-2">
+                        Código {codigo.codigo}
+                        <button
+                          type="button"
+                          onClick={removeCode}
+                          className="text-xs font-bold text-slate-400 underline"
+                        >
+                          quitar
+                        </button>
+                      </span>
+                      <strong>-{formatPrice(codeDiscount)}</strong>
+                    </div>
+                  )}
 
                   <div className="flex justify-between text-xl font-black">
-                    <span>Total parcial</span>
+                    <span>Total</span>
                     <span>{formatPrice(total)}</span>
                   </div>
                 </div>
 
-                {createOrderError && (
-                  <p className="mt-3 rounded-2xl bg-red-50 p-3 text-sm font-bold text-red-600">
-                    {createOrderError}
-                  </p>
-                )}
-
                 <div className="mt-5 grid gap-3">
                   <button
                     type="button"
-                    disabled={
-                      !items.length ||
-                      !selectedZoneId ||
-                      !customerName.trim() ||
-                      creatingOrder
-                    }
-                    onClick={handleReview}
+                    disabled={!items.length}
+                    onClick={() => setConfirmOpen(true)}
                     className="rounded-2xl bg-emerald-500 px-5 py-4 font-black text-white transition hover:bg-emerald-600 disabled:bg-slate-300"
                   >
-                    {creatingOrder ? "Registrando pedido..." : "Revisar y enviar"}
+                    Continuar
                   </button>
 
                   {items.length > 0 && (
@@ -403,95 +410,205 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
               className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-black uppercase text-pink-600">
-                    Confirmación
-                  </p>
-                  <h3 className="text-2xl font-black text-slate-900">
-                    Revisa tu pedido
+              {sentOrder ? (
+                <div className="text-center">
+                  <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+                    <Check size={30} />
+                  </span>
+                  <h3 className="mt-4 text-2xl font-black text-slate-900">
+                    ¡Pedido #{String(sentOrder.numero).padStart(3, "0")}{" "}
+                    registrado!
                   </h3>
-                  {orderNumber && (
-                    <p className="mt-1 text-sm font-bold text-slate-500">
-                      Pedido #{String(orderNumber).padStart(3, "0")}
-                    </p>
-                  )}
+                  <p className="mt-2 text-sm text-slate-600">
+                    Solo falta que envíes el mensaje en WhatsApp para que lo
+                    veamos. Si no se abrió, toca el botón.
+                  </p>
+
+                  <div className="mt-5 grid gap-3">
+                    <a
+                      href={sentOrder.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-2xl bg-emerald-500 px-5 py-4 text-center font-black text-white"
+                    >
+                      Abrir WhatsApp
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={handleFinish}
+                      className="rounded-2xl bg-slate-100 px-5 py-4 font-black text-slate-800"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-black uppercase text-pink-600">
+                        Confirmación
+                      </p>
+                      <h3 className="text-2xl font-black text-slate-900">
+                        Confirma tu pedido
+                      </h3>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => setConfirmOpen(false)}
-                  className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100"
-                >
-                  <X size={18} />
-                </button>
-              </div>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmOpen(false)}
+                      className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100"
+                      aria-label="Volver al carrito"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
 
-              <div className="mt-5 space-y-3">
-                {items.map((item) => (
-                  <div key={item.id} className="rounded-2xl bg-pink-50 p-4">
-                    <div className="flex justify-between gap-3">
-                      <strong>
-                        {item.quantity} x {item.productName}
-                      </strong>
-                      <strong className="text-pink-600">
-                        {formatPrice(item.subtotal)}
+                  <div className="mt-5 rounded-3xl border border-orange-100 bg-orange-50 p-5">
+                    <h4 className="font-black text-slate-900">
+                      ¿A nombre de quién se entrega?
+                    </h4>
+
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(event) => setCustomerName(event.target.value)}
+                      placeholder="Nombre completo"
+                      className="mt-3 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                    />
+
+                    <h4 className="mt-5 font-black text-slate-900">
+                      ¿Cómo quieres recibir tu pedido?
+                    </h4>
+
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod("pickup")}
+                        className={`flex flex-col items-center gap-1 rounded-2xl border-2 p-3 font-black transition ${
+                          isPickup
+                            ? "border-pink-500 bg-pink-50 text-pink-700"
+                            : "border-orange-200 bg-white text-slate-700"
+                        }`}
+                      >
+                        <Store size={22} />
+                        Pick up
+                        <span className="text-xs font-bold text-slate-500">
+                          Recoger en el local
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setDeliveryMethod("delivery")}
+                        className={`flex flex-col items-center gap-1 rounded-2xl border-2 p-3 font-black transition ${
+                          isDelivery
+                            ? "border-pink-500 bg-pink-50 text-pink-700"
+                            : "border-orange-200 bg-white text-slate-700"
+                        }`}
+                      >
+                        <Truck size={22} />
+                        Envío
+                        <span className="text-xs font-bold text-slate-500">
+                          Seleccionar ubicación
+                        </span>
+                      </button>
+                    </div>
+
+                    {isDelivery && (
+                      <div className="mt-5">
+                        <h4 className="font-black text-slate-900">
+                          Tu ubicación
+                        </h4>
+                        <p className="mb-3 mt-1 text-sm text-slate-600">
+                          Así no tienes que mandárnosla por WhatsApp.
+                        </p>
+
+                        <LocationPicker value={coords} onChange={setCoords} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    {items.map((item) => (
+                      <div key={item.id} className="rounded-2xl bg-pink-50 p-4">
+                        <div className="flex justify-between gap-3">
+                          <strong>
+                            {item.quantity} x {item.productName}
+                          </strong>
+                          <strong className="text-pink-600">
+                            {formatPrice(item.subtotal)}
+                          </strong>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 space-y-2 rounded-2xl bg-slate-950 p-5 text-white">
+                    <div className="flex justify-between gap-4">
+                      <span>Entrega</span>
+                      <strong className="text-right">
+                        {deliveryLabel || "Sin seleccionar"}
                       </strong>
                     </div>
+
+                    <div className="flex justify-between">
+                      <span>Costo de envío</span>
+                      <strong>
+                        {!deliveryMethod
+                          ? "—"
+                          : isPickup
+                            ? "Sin costo"
+                            : "Se confirma por WhatsApp"}
+                      </strong>
+                    </div>
+
+                    {(promoDiscount > 0 || codeDiscount > 0) && (
+                      <div className="flex justify-between gap-4 text-emerald-300">
+                        <span>
+                          {codigo && promoDiscount === 0
+                            ? `Código ${codigo.codigo}`
+                            : "Descuentos"}
+                        </span>
+                        <strong>
+                          -{formatPrice(promoDiscount + codeDiscount)}
+                        </strong>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between text-xl">
+                      <span>Total parcial</span>
+                      <strong>{formatPrice(total)}</strong>
+                    </div>
                   </div>
-                ))}
-              </div>
 
-              <div className="mt-5 space-y-2 rounded-2xl bg-slate-950 p-5 text-white">
-                <div className="flex justify-between gap-4">
-                  <span>Entrega a</span>
-                  <strong className="text-right">{customerName.trim()}</strong>
-                </div>
+                  {sendError && (
+                    <p className="mt-4 rounded-2xl bg-red-50 p-3 text-sm font-bold text-red-600">
+                      {sendError}
+                    </p>
+                  )}
 
-                <div className="flex justify-between gap-4">
-                  <span>Entrega</span>
-                  <strong className="text-right">{selectedZone?.zone}</strong>
-                </div>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmOpen(false)}
+                      className="rounded-2xl bg-slate-100 px-5 py-4 font-black text-slate-800"
+                    >
+                      Seguir editando
+                    </button>
 
-                <div className="flex justify-between">
-                  <span>Costo de envío</span>
-                  <strong>
-                    {selectedZone?.id === "pickup"
-                      ? "Sin costo"
-                      : "Pendiente de ubicación"}
-                  </strong>
-                </div>
-
-                <div className="flex justify-between text-xl">
-                  <span>Total parcial</span>
-                  <strong>{formatPrice(total)}</strong>
-                </div>
-              </div>
-
-              <p className="mt-4 rounded-2xl bg-orange-50 p-4 text-sm font-semibold text-orange-800">
-                {selectedZone?.id === "pickup"
-                  ? "Te confirmaremos por WhatsApp cuándo estará listo tu pedido para recoger."
-                  : "Al abrir WhatsApp, envía también tu ubicación para recibir el costo exacto del envío."}
-              </p>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => setConfirmOpen(false)}
-                  className="rounded-2xl bg-slate-100 px-5 py-4 font-black text-slate-800"
-                >
-                  Seguir editando
-                </button>
-
-                <a
-                  href={whatsappUrl(finalMessage)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-2xl bg-emerald-500 px-5 py-4 text-center font-black text-white"
-                >
-                  Enviar por WhatsApp
-                </a>
-              </div>
+                    <button
+                      type="button"
+                      disabled={!canSend}
+                      onClick={handleSend}
+                      className="rounded-2xl bg-emerald-500 px-5 py-4 text-center font-black text-white transition hover:bg-emerald-600 disabled:bg-slate-300"
+                    >
+                      {sending ? "Registrando..." : "Enviar por WhatsApp"}
+                    </button>
+                  </div>
+                </>
+              )}
             </motion.div>
           </motion.div>
         )}

@@ -27,6 +27,7 @@ export const toppings = zeroPrice([
   "Galleta María molida",
   "Chispas de chocolate",
   "Chocokrispis",
+  "Frootloops",
 ]);
 
 export const frutasDulces = zeroPrice([

@@ -35,4 +35,7 @@ export interface MenuProduct {
   popular?: boolean;
   featured?: boolean;
   fixedIngredients?: string[];
+  /** Producto de temporada: solo se muestra entre estas fechas (AAAA-MM-DD). */
+  availableFrom?: string;
+  availableUntil?: string;
 }

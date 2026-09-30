@@ -5,6 +5,10 @@ import {
   listarPreciosOverride,
 } from "../services/productosService";
 import type { MenuProduct } from "../types/product";
+import { estaVigente } from "../utils/fecha";
+
+const enTemporada = (producto: MenuProduct) =>
+  estaVigente(producto.availableFrom, producto.availableUntil);
 
 /**
  * Devuelve el menú con los precios y descripciones que el negocio haya
@@ -13,7 +17,9 @@ import type { MenuProduct } from "../types/product";
  * precios.
  */
 export const useMenuConPrecios = () => {
-  const [menuActual, setMenuActual] = useState<MenuProduct[]>(menuBase);
+  const [menuActual, setMenuActual] = useState<MenuProduct[]>(() =>
+    menuBase.filter(enTemporada),
+  );
 
   useEffect(() => {
     let cancelado = false;
@@ -35,7 +41,7 @@ export const useMenuConPrecios = () => {
         );
 
         setMenuActual(
-          menuBase.map((producto) => {
+          menuBase.filter(enTemporada).map((producto) => {
             const description =
               descripcionPorProducto.get(producto.id) ?? producto.description;
 

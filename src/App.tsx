@@ -7,8 +7,10 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import logo from "./assets/logo-charolas-locas.png";
+import { PromoSection } from "./components/PromoSection";
+import { WednesdayBanner } from "./components/WednesdayBanner";
+import { promosVigentes } from "./data/promos";
 import { CartDrawer } from "./components/CartDrawer";
 import { MenuSection } from "./components/MenuSection";
 import { FirstTimeSection } from "./components/FirstTimeSection";
@@ -21,7 +23,7 @@ import { AddToCartToast } from "./components/AddToCartToast";
 import { useCart } from "./context/CartContext";
 import { config } from "./data/config";
 import { formatPrice } from "./utils/formatPrice";
-import { getBusinessStatus, isWednesday } from "./utils/schedule";
+import { getBusinessStatus } from "./utils/schedule";
 import { whatsappUrl } from "./utils/whatsapp";
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
   const [cartOpen, setCartOpen] = useState(false);
 
   const status = getBusinessStatus();
+  const hayPromos = promosVigentes().length > 0;
   const { items, total } = useCart();
 
   return (
@@ -59,6 +62,11 @@ function App() {
             <a href="#menu" className="font-bold text-slate-600 hover:text-pink-600">
               Menú
             </a>
+            {hayPromos && (
+              <a href="#promos" className="font-bold text-orange-500 hover:text-pink-600">
+                Promos
+              </a>
+            )}
             <a href="#horarios" className="font-bold text-slate-600 hover:text-pink-600">
               Horarios
             </a>
@@ -71,9 +79,6 @@ function App() {
             <a href="#contacto" className="font-bold text-slate-600 hover:text-pink-600">
               Contacto
             </a>
-            <Link to="/estatus" className="font-bold text-slate-600 hover:text-pink-600">
-              Estatus de pedido
-            </Link>
           </nav>
 
           <div className="flex gap-2">
@@ -106,6 +111,7 @@ function App() {
             {[
               ["Inicio", "#inicio"],
               ["Menú", "#menu"],
+              ...(hayPromos ? [["Promos", "#promos"]] : []),
               ["Horarios", "#horarios"],
               ["Envíos", "#envios"],
               ["Pago", "#pago"],
@@ -124,11 +130,7 @@ function App() {
         )}
       </header>
 
-      {isWednesday() && (
-        <div className="bg-gradient-to-r from-pink-600 via-fuchsia-500 to-orange-400 px-4 py-3 text-center font-black text-white">
-          ✨ ¡MIÉRCOLES DE PROMOCIÓN! · 20% de descuento en todas las frutas con crema.
-        </div>
-      )}
+      <WednesdayBanner />
 
       <main>
         <section id="inicio" className="relative overflow-hidden">
@@ -198,15 +200,22 @@ function App() {
             </div>
 
             <div className="mx-auto w-full max-w-lg rounded-[3rem] bg-gradient-to-br from-pink-500 via-fuchsia-400 to-orange-300 p-8 shadow-2xl shadow-pink-200">
-              <img
-                src={logo}
-                alt="Logo de CHAROLAS LOCAS"
-                className="aspect-square w-full rounded-[2.3rem] object-cover"
+              <video
+                className="aspect-square w-full rounded-[2.3rem] bg-pink-100 object-cover"
+                src="/videos/hero-charolas.mp4"
+                poster="/videos/hero-poster.jpg"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                aria-label="Algunos de los productos de CHAROLAS LOCAS"
               />
             </div>
           </div>
         </section>
 
+        <PromoSection />
         <FirstTimeSection />
         <MenuSection />
         <ScheduleSection />

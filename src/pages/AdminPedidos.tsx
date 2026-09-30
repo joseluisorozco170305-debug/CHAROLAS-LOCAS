@@ -2,16 +2,18 @@ import { Home, LogOut } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { CodigosDescuento } from "./admin/CodigosDescuento";
 import { EditarProductos } from "./admin/EditarProductos";
 import { HistorialPedidos } from "./admin/HistorialPedidos";
 import { PedidosHoy } from "./admin/PedidosHoy";
 
-type Pestana = "hoy" | "historial" | "productos";
+type Pestana = "hoy" | "historial" | "productos" | "descuentos";
 
 const pestanas: { id: Pestana; label: string }[] = [
   { id: "hoy", label: "Pedidos de hoy" },
   { id: "historial", label: "Historial" },
   { id: "productos", label: "Productos" },
+  { id: "descuentos", label: "Descuentos" },
 ];
 
 export function AdminPedidos() {
@@ -143,6 +145,7 @@ export function AdminPedidos() {
           {pestana === "hoy" && <PedidosHoy />}
           {pestana === "historial" && <HistorialPedidos />}
           {pestana === "productos" && <EditarProductos />}
+          {pestana === "descuentos" && <CodigosDescuento />}
         </div>
       </div>
     </div>

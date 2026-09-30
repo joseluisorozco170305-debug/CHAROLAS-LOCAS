@@ -11,6 +11,7 @@ import {
   salsas,
   toppings,
 } from "./catalogos";
+import { temporadaPanDeMuerto } from "./temporadas";
 
 const option = (id: string, name: string, price = 0): ProductOption => ({
   id,
@@ -124,7 +125,81 @@ const drinks = [
   ["mojito-menta-tradicional", "Mojito de menta tradicional sin alcohol", 70],
 ] as const;
 
+
+// ---------------------------------------------------------------------------
+// Temporada: Pan de Muerto (se oculta solo después de la fecha en temporadas.ts)
+// ---------------------------------------------------------------------------
+const rellenosPan = [
+  option("fresa", "Fresa"),
+  option("uva", "Uva"),
+  option("durazno", "Durazno"),
+  option("platano", "Plátano"),
+  option("frutos-rojos", "Frutos rojos"),
+];
+
+const panGroups = [
+  group("relleno", "Elige tu relleno", rellenosPan, 1, 1, true),
+  group("toppings", "Elige tu topping", toppings, 1, 1, true),
+  group("jarabes", "Elige tu jarabe", jarabes, 1, 1, true),
+  group(
+    "extras",
+    "Extras opcionales",
+    [option("queso-philadelphia", "Queso Philadelphia", 10)],
+    0,
+    1,
+    false,
+  ),
+];
+
+const panDescripcion =
+  "Relleno de fresa, uva, durazno, plátano o frutos rojos con crema, chantilly, 1 topping y 1 jarabe.";
+
+const temporadaPan = {
+  categoryId: "pan-de-muerto",
+  available: true,
+  availableFrom: temporadaPanDeMuerto.desde,
+  availableUntil: temporadaPanDeMuerto.hasta,
+  groups: panGroups,
+};
+
+const menuPanDeMuerto: MenuProduct[] = [
+  {
+    ...temporadaPan,
+    id: "pan-de-muerto",
+    name: "Pan de Muerto",
+    description: panDescripcion,
+    popular: true,
+    featured: true,
+    sizes: [
+      { id: "mini", name: "Mini", price: 25 },
+      { id: "tradicional", name: "Tradicional", price: 50 },
+    ],
+  },
+  {
+    ...temporadaPan,
+    id: "combo-frappe-pan",
+    name: "Combo Frappé + Pan",
+    description: `Frappé de chocolate abuelita + pan de muerto. ${panDescripcion}`,
+    sizes: [
+      { id: "mini", name: "Frappé mini + pan mini", price: 75 },
+      { id: "tradicional", name: "Frappé + pan tradicional", price: 120 },
+    ],
+  },
+  {
+    ...temporadaPan,
+    id: "combo-chocolate-caliente-pan",
+    name: "Combo Chocolate caliente + Pan",
+    description: `Chocolate abuelita caliente + pan de muerto. ${panDescripcion}`,
+    sizes: [
+      { id: "mini", name: "Chocolate mini + pan mini", price: 70 },
+      { id: "tradicional", name: "Chocolate + pan tradicional", price: 100 },
+    ],
+  },
+];
+
 export const menu: MenuProduct[] = [
+  ...menuPanDeMuerto,
+
   ...[
     ["fresas-con-crema", "Fresas con crema"],
     ["duraznos-con-crema", "Duraznos con crema"],
