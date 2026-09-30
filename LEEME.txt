@@ -1,6 +1,0 @@
-1) Copia estos archivos encima de tu proyecto (mismas rutas).
-2) BORRA el archivo:  src/pages/EstatusPedido.tsx   (ya no se usa y rompe la compilación si se queda)
-3) En la carpeta del proyecto corre:  npm install
-4) En Supabase -> SQL Editor corre, en este orden:
-     supabase/ubicacion.sql          (si aún no lo corriste)
-     supabase/codigos_descuento.sql
