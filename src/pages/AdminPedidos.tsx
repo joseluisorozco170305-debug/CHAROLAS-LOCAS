@@ -5,11 +5,13 @@ import { supabase } from "../lib/supabaseClient";
 import { CodigosDescuento } from "./admin/CodigosDescuento";
 import { EditarProductos } from "./admin/EditarProductos";
 import { HistorialPedidos } from "./admin/HistorialPedidos";
+import { PedidoManual } from "./admin/PedidoManual";
 
-type Pestana = "historial" | "productos" | "descuentos";
+type Pestana = "historial" | "manual" | "productos" | "descuentos";
 
 const pestanas: { id: Pestana; label: string }[] = [
   { id: "historial", label: "Pedidos" },
+  { id: "manual", label: "Pedido especial" },
   { id: "productos", label: "Productos" },
   { id: "descuentos", label: "Descuentos" },
 ];
@@ -141,6 +143,7 @@ export function AdminPedidos() {
 
         <div className="mt-6">
           {pestana === "historial" && <HistorialPedidos />}
+          {pestana === "manual" && <PedidoManual />}
           {pestana === "productos" && <EditarProductos />}
           {pestana === "descuentos" && <CodigosDescuento />}
         </div>

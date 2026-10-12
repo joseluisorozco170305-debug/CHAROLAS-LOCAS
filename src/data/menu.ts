@@ -1,13 +1,17 @@
 import type { MenuProduct, ProductOption } from "../types/product";
+import type { ProductGroup } from "../types/product";
 import {
+  cacahuates,
   complementosSalados,
   extrasAlitasBoneless,
   extrasCrema,
   extrasDulces,
   extrasSnacks,
   frutasDulces,
+  gomitas,
   ingredientesSalados,
   jarabes,
+  opcionesPapas,
   salsas,
   toppings,
 } from "./catalogos";
@@ -197,7 +201,7 @@ const menuPanDeMuerto: MenuProduct[] = [
   },
 ];
 
-export const menu: MenuProduct[] = [
+const menuCodigo: MenuProduct[] = [
   ...menuPanDeMuerto,
 
   ...[
@@ -526,18 +530,6 @@ export const menu: MenuProduct[] = [
         ...(needsSauce || id === "nuggets" || id === "palomitas-pollo"
           ? [group("salsa", "Elige una salsa", salsas, 1, 1, true)]
           : []),
-        ...(id === "alitas" || id === "boneless"
-          ? [
-              group(
-                "extras-papas",
-                "Opciones para agregar",
-                extrasAlitasBoneless,
-                0,
-                1,
-                false,
-              ),
-            ]
-          : []),
         group("extras", "Extras opcionales", extrasSnacks, 0, extrasSnacks.length, false),
         ...(id === "papas-francesa"
           ? [
@@ -752,24 +744,8 @@ export const menu: MenuProduct[] = [
     "dorilocos",
     "charolas-locas",
     "Dorilocos",
-    "Doritos de tu elección con pepino, zanahoria, jícama, cueritos, gomitas, cacahuates, chamoy, Miguelito y Tajín.",
+    "Doritos Nacho con pepino, zanahoria, jícama, cueritos, gomitas, cacahuates, chamoy, Miguelito y Tajín.",
     45,
-    {
-      groups: [
-        group(
-          "doritos",
-          "Elige tus Doritos",
-          [
-            option("nacho", "Doritos Nacho"),
-            option("incognita", "Doritos Incógnita"),
-            option("flamin-hot", "Doritos Flamin' Hot"),
-          ],
-          1,
-          1,
-          true,
-        ),
-      ],
-    },
   ),
 
   simple(
@@ -1107,3 +1083,53 @@ export const menu: MenuProduct[] = [
     ),
   ),
 ];
+
+/* ------------------------------------------------------------------ */
+/* Opciones automáticas según la descripción del producto              */
+/* ------------------------------------------------------------------ */
+
+const PRODUCTOS_DE_PAPAS = ["papas-francesa", "papas-gajo", "salchipapas", "papas-locas"];
+const COMBOS_CON_PAPAS = ["combo-individual", "combo-familiar", "combo-kids", "combo-amigos", "charolon"];
+
+const grupoGomitas = group("gomitas", "Elige tus gomitas", gomitas, 1, 2, true);
+const grupoCacahuates = group("cacahuates", "¿Cómo quieres los cacahuates?", cacahuates, 1, 1, true);
+const grupoAgregarPapas = group("agregar-papas", "¿Le agregas papas?", extrasAlitasBoneless, 0, 1, false);
+const grupoComoPapas: ProductGroup = {
+  ...group("como-papas", "¿Cómo quieres tus papas?", opcionesPapas, 0, opcionesPapas.length, false),
+  visibleIf: "agregar-papas",
+};
+
+/** Mete los grupos antes de los "Extras opcionales" para que salgan primero. */
+const insertarAntesDeExtras = (grupos: ProductGroup[], nuevos: ProductGroup[]) => {
+  const i = grupos.findIndex((g) => g.id.startsWith("extras"));
+  return i === -1 ? [...grupos, ...nuevos] : [...grupos.slice(0, i), ...nuevos, ...grupos.slice(i)];
+};
+
+const enriquecer = (producto: MenuProduct): MenuProduct => {
+  const texto = producto.description.toLocaleLowerCase("es-MX");
+  // Quita grupos viejos de gomitas para usar siempre la lista estándar.
+  let grupos = (producto.groups ?? []).filter((g) => !g.id.startsWith("gomitas"));
+
+  const nuevos: ProductGroup[] = [];
+  // "\b" evita que "mangomitas" cuente como "gomitas".
+  if (/\bgomitas?\b/.test(texto)) nuevos.push(grupoGomitas);
+  if (/cacahuate/.test(texto)) nuevos.push(grupoCacahuates);
+  if (nuevos.length) grupos = insertarAntesDeExtras(grupos, nuevos);
+
+  const llevaSalsa =
+    producto.categoryId === "snacks-calientes" ||
+    /\bsalsas?\b/.test(texto) ||
+    grupos.some((g) => g.options === salsas);
+
+  if (
+    llevaSalsa &&
+    !PRODUCTOS_DE_PAPAS.includes(producto.id) &&
+    !COMBOS_CON_PAPAS.includes(producto.id)
+  ) {
+    grupos = [...grupos, grupoAgregarPapas, grupoComoPapas];
+  }
+
+  return grupos.length ? { ...producto, groups: grupos } : producto;
+};
+
+export const menu: MenuProduct[] = menuCodigo.map(enriquecer);

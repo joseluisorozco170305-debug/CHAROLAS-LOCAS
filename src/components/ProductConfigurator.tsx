@@ -8,6 +8,7 @@ import {
   getResolvedRule,
   toggleOption,
   validateConfiguration,
+  visibleGroups,
 } from "../services/menuEngine";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
 import type { CartItem } from "../types/cart";
@@ -61,7 +62,7 @@ export function ProductConfigurator({
       (item) => item.id === configuration.sizeId,
     );
 
-    const selections = (product.groups ?? [])
+    const selections = visibleGroups(product, configuration)
       .map((group) => ({
         groupId: group.id,
         groupTitle: group.title,
@@ -187,7 +188,7 @@ export function ProductConfigurator({
             </section>
           ) : null}
 
-          {(product.groups ?? []).map((group) => {
+          {visibleGroups(product, configuration).map((group) => {
             const selected = configuration.selectedOptions[group.id] ?? [];
             const rule = getResolvedRule(
               product,

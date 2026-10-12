@@ -593,7 +593,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         )}
                         <p className="mt-2 text-xs font-semibold text-slate-500">
                           Gratis hasta {RADIO_GRATIS_KM} km recorridos por calle;
-                          después +$5 por cada km.
+                          después desde $10 y +$5 por cada km.
                         </p>
                       </div>
                     )}

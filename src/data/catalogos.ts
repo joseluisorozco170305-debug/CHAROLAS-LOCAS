@@ -81,6 +81,12 @@ export const extrasSnacks: ProductOption[] = [
   { id: "ranch-grande", name: "Ranch grande", price: 15 },
 ];
 
+export const gomitas = zeroPrice(["Panditas", "Lombrices", "Mangomitas", "Fruta"]);
+
+export const cacahuates = zeroPrice(["Enchilados", "Naturales"]);
+
+export const opcionesPapas = zeroPrice(["Catsup", "Queso", "Salsa"]);
+
 export const extrasAlitasBoneless: ProductOption[] = [
   { id: "media-orden-papas", name: "Media orden de papas", price: 20 },
   { id: "orden-completa-papas", name: "Orden completa de papas", price: 55 },

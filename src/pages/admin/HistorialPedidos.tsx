@@ -1,4 +1,4 @@
-import { Store, Trash2 } from "lucide-react";
+import { PenLine, Store, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   eliminarPedido,
@@ -109,6 +109,7 @@ export function HistorialPedidos() {
           <div className="mt-4 space-y-3">
             {pedidos.map((pedido) => {
               const enLocal = pedido.zona_entrega === "En el local";
+              const manual = pedido.zona_entrega === "Pedido manual";
 
               return (
                 <div
@@ -130,6 +131,11 @@ export function HistorialPedidos() {
                           {enLocal && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-black text-orange-700">
                               <Store size={12} /> Local
+                            </span>
+                          )}
+                          {manual && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-black text-violet-700">
+                              <PenLine size={12} /> Especial
                             </span>
                           )}
                         </p>

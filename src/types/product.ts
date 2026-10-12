@@ -11,6 +11,8 @@ export interface ProductGroup {
   min: number;
   max: number;
   options: ProductOption[];
+  /** Solo se muestra (y se valida/cobra) si en ese otro grupo eligieron algo. */
+  visibleIf?: string;
 }
 
 export interface ProductSize {

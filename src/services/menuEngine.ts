@@ -35,6 +35,19 @@ export const createConfigurationFromCartItem = (
   notes: item.notes ?? "",
 });
 
+/** Un grupo con "visibleIf" solo cuenta si eligieron algo en ese otro grupo. */
+export const isGroupVisible = (
+  group: ProductGroup,
+  config: Pick<ProductConfiguration, "selectedOptions">,
+) =>
+  !group.visibleIf ||
+  (config.selectedOptions[group.visibleIf] ?? []).length > 0;
+
+export const visibleGroups = (
+  product: MenuProduct,
+  config: Pick<ProductConfiguration, "selectedOptions">,
+) => (product.groups ?? []).filter((group) => isGroupVisible(group, config));
+
 export const getResolvedRule = (
   product: MenuProduct,
   group: ProductGroup,
@@ -91,7 +104,7 @@ export const calculatePriceParts = (
 
   let extras = 0;
 
-  for (const group of product.groups ?? []) {
+  for (const group of visibleGroups(product, config)) {
     for (const id of config.selectedOptions[group.id] ?? []) {
       extras += group.options.find((option) => option.id === id)?.price ?? 0;
     }
@@ -110,7 +123,7 @@ export const validateConfiguration = (
     errors.push("Selecciona un tamaño.");
   }
 
-  for (const group of product.groups ?? []) {
+  for (const group of visibleGroups(product, config)) {
     const selected = config.selectedOptions[group.id] ?? [];
     const rule = getResolvedRule(product, group, config.sizeId);
 

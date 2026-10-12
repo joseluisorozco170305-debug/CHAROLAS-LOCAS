@@ -10,7 +10,10 @@ export const LOCAL_COORDS: Coords = { lat: 19.64921008537192, lng: -99.169246497
 /** Kilómetros (recorridos por calle) desde el local sin costo de envío. */
 export const RADIO_GRATIS_KM = 2;
 
-/** Lo que se cobra por cada kilómetro (o fracción) después del radio gratis. */
+/** Lo que se cobra en cuanto se pasa de los km gratis. */
+export const COSTO_INICIAL = 10;
+
+/** Lo que sube por cada kilómetro (o fracción) extra después de eso. */
 export const COSTO_POR_KM = 5;
 
 /** Distancia en línea recta ("a la redonda") entre dos puntos, en km. */
@@ -28,14 +31,16 @@ export const distanciaKm = (a: Coords, b: Coords) => {
 
 /**
  * 0 – 2 km  → $0
- * 2 – 3 km  → $5
- * 3 – 4 km  → $10
+ * 2 – 3 km  → $10
+ * 3 – 4 km  → $15
+ * 4 – 5 km  → $20
  * …y así, +$5 por cada kilómetro extra.
  */
-export const costoEnvioPorDistancia = (km: number) =>
-  km <= RADIO_GRATIS_KM
-    ? 0
-    : Math.ceil(km - RADIO_GRATIS_KM - 1e-9) * COSTO_POR_KM;
+export const costoEnvioPorDistancia = (km: number) => {
+  if (km <= RADIO_GRATIS_KM) return 0;
+  const kmCobrados = Math.ceil(km - RADIO_GRATIS_KM - 1e-9);
+  return COSTO_INICIAL + (kmCobrados - 1) * COSTO_POR_KM;
+};
 
 export interface RutaEnvio {
   /** Kilómetros a recorrer por calle. */

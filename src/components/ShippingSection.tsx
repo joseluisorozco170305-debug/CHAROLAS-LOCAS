@@ -1,5 +1,9 @@
 import { MapPin, ShoppingBag, Truck } from "lucide-react";
-import { COSTO_POR_KM, RADIO_GRATIS_KM } from "../data/envio";
+import {
+  COSTO_POR_KM,
+  costoEnvioPorDistancia,
+  RADIO_GRATIS_KM,
+} from "../data/envio";
 
 const tarifas = [
   { id: "pickup", zone: "Pick up · Recoger en el local", cost: 0 },
@@ -7,7 +11,7 @@ const tarifas = [
   ...[1, 2, 3, 4].map((n) => ({
     id: `km-${n}`,
     zone: `De ${RADIO_GRATIS_KM + n - 1} a ${RADIO_GRATIS_KM + n} km`,
-    cost: n * COSTO_POR_KM,
+    cost: costoEnvioPorDistancia(RADIO_GRATIS_KM + n - 0.5),
   })),
 ];
 
