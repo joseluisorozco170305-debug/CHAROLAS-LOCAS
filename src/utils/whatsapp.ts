@@ -73,3 +73,7 @@ export const buildOrderMessage = (
 
   return lines.join("\n");
 };
+
+/** Abre WhatsApp para elegir a quién mandar el texto (contacto o grupo). */
+export const whatsappCompartirUrl = (message: string) =>
+  `https://wa.me/?text=${encodeURIComponent(message)}`;

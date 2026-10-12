@@ -1,4 +1,4 @@
-import { PenLine, Store, Trash2 } from "lucide-react";
+import { PenLine, Share2, Store, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   eliminarPedido,
@@ -8,10 +8,44 @@ import {
 import { fechaMexicoISO } from "../../utils/fecha";
 import { BotonDesplegar, DetallePedido } from "./DetallePedido";
 import type { PedidoDB } from "../../types/pedido";
+import type { CartItem } from "../../types/cart";
+import { formatPrice } from "../../utils/formatPrice";
+import { whatsappCompartirUrl } from "../../utils/whatsapp";
 
 const hoyISO = () => fechaMexicoISO();
 const numero = (pedido: PedidoDB) =>
   String(pedido.numero_pedido).padStart(3, "0");
+
+/** Texto del pedido para mandarlo por WhatsApp a los empleados. */
+const textoPedido = (pedido: PedidoDB) => {
+  const items = Array.isArray(pedido.items) ? (pedido.items as CartItem[]) : [];
+  const hora = new Date(pedido.created_at).toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const lineas = [
+    `🍓 *PEDIDO #${numero(pedido)}* · ${hora}`,
+    `👤 ${pedido.nombre_cliente}`,
+    `📦 ${pedido.zona_entrega || "—"}`,
+    "",
+  ];
+
+  items.forEach((item) => {
+    lineas.push(
+      `• *${item.quantity} x ${item.productName}*${item.sizeName ? ` (${item.sizeName})` : ""}`,
+    );
+    item.selections?.forEach((sel) =>
+      lineas.push(`   ${sel.groupTitle}: ${sel.options.map((o) => o.name).join(", ")}`),
+    );
+    if (item.notes) lineas.push(`   📝 ${item.notes}`);
+  });
+
+  if (pedido.ubicacion_url) lineas.push("", `📍 ${pedido.ubicacion_url}`);
+  lineas.push("", `*TOTAL: ${formatPrice(Number(pedido.total))}*`);
+
+  return lineas.join("\n");
+};
 
 export function HistorialPedidos() {
   const [fecha, setFecha] = useState(hoyISO());
@@ -154,6 +188,17 @@ export function HistorialPedidos() {
 
                       <BotonDesplegar abierto={!!abiertos[pedido.id]} />
                     </button>
+
+                    <a
+                      href={whatsappCompartirUrl(textoPedido(pedido))}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Compartir pedido ${numero(pedido)} por WhatsApp`}
+                      title="Compartir por WhatsApp"
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 transition hover:bg-emerald-100"
+                    >
+                      <Share2 size={17} />
+                    </a>
 
                     <button
                       type="button"
