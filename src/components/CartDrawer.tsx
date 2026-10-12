@@ -19,6 +19,7 @@ import type { CartItem } from "../types/cart";
 import { formatPrice } from "../utils/formatPrice";
 import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
 import { googleMapsLink, type Coords } from "../utils/ubicacion";
+import { calcularEnvio, formatKm, RADIO_GRATIS_KM } from "../data/envio";
 import { LocationPicker } from "./LocationPicker";
 import { ProductConfigurator } from "./ProductConfigurator";
 
@@ -63,10 +64,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const isPickup = deliveryMethod === "pickup";
   const isDelivery = deliveryMethod === "delivery";
   const locationUrl = coords ? googleMapsLink(coords) : "";
+  const envio = isDelivery && coords ? calcularEnvio(coords) : null;
+  const costoEnvio = envio?.costo ?? 0;
+  const totalFinal = total + costoEnvio;
   const deliveryLabel = isPickup
     ? "Pick up · Recoger en el local"
     : isDelivery
-      ? "Envío a domicilio"
+      ? envio
+        ? `Envío a domicilio · ${formatKm(envio.km)} · ${costoEnvio > 0 ? formatPrice(costoEnvio) : "envío gratis"}`
+        : "Envío a domicilio"
       : "";
 
   const buildFinalMessage = (orderNumber: number) =>
@@ -75,7 +81,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         items,
         subtotal,
         promoDiscount,
-        total,
+        totalFinal,
         orderNumber,
         customerName,
         codigo
@@ -86,15 +92,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               monto: codeDiscount,
             }
           : undefined,
+        envio
+          ? { costo: costoEnvio, distancia: formatKm(envio.km) }
+          : undefined,
       ),
       "",
-      `Método de entrega: ${deliveryLabel}`,
+      `Método de entrega: ${isPickup ? deliveryLabel : "Envío a domicilio"}`,
       ...(isPickup
-        ? ["El cliente recogerá su pedido en el local.", "Costo de envío: $0"]
-        : [
-            `📍 Ubicación: ${locationUrl}`,
-            "Costo de envío pendiente de confirmación.",
-          ]),
+        ? ["El cliente recogerá su pedido en el local."]
+        : [`📍 Ubicación: ${locationUrl}`]),
     ].join("\n");
 
   const handleSend = async () => {
@@ -113,7 +119,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         ubicacionUrl: isPickup ? null : locationUrl,
         codigoDescuento: codigo?.codigo ?? null,
         descuentoCodigo: codigo ? codeDiscount : null,
-        total,
+        total: totalFinal,
       });
 
       const url = whatsappUrl(buildFinalMessage(pedido.numero_pedido));
@@ -526,6 +532,25 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         </p>
 
                         <LocationPicker value={coords} onChange={setCoords} />
+
+                        {envio && (
+                          <p
+                            className={`mt-3 rounded-2xl px-4 py-3 text-sm font-black ${
+                              costoEnvio === 0
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-white text-slate-700 ring-1 ring-orange-200"
+                            }`}
+                          >
+                            Estás a {formatKm(envio.km)} del local ·{" "}
+                            {costoEnvio === 0
+                              ? "¡envío gratis! 🎉"
+                              : `envío ${formatPrice(costoEnvio)}`}
+                          </p>
+                        )}
+                        <p className="mt-2 text-xs font-semibold text-slate-500">
+                          Gratis a menos de {RADIO_GRATIS_KM} km; después +$5 por
+                          cada km.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -553,14 +578,25 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                       </strong>
                     </div>
 
-                    <div className="flex justify-between">
-                      <span>Costo de envío</span>
-                      <strong>
+                    <div className="flex justify-between gap-4">
+                      <span>
+                        Costo de envío
+                        {envio && (
+                          <span className="block text-xs font-semibold text-slate-400">
+                            {formatKm(envio.km)} del local
+                          </span>
+                        )}
+                      </span>
+                      <strong className="text-right">
                         {!deliveryMethod
                           ? "—"
                           : isPickup
                             ? "Sin costo"
-                            : "Se confirma por WhatsApp"}
+                            : !envio
+                              ? "Marca tu ubicación"
+                              : costoEnvio > 0
+                                ? formatPrice(costoEnvio)
+                                : "¡Gratis!"}
                       </strong>
                     </div>
 
@@ -578,8 +614,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     )}
 
                     <div className="flex justify-between text-xl">
-                      <span>Total parcial</span>
-                      <strong>{formatPrice(total)}</strong>
+                      <span>Total</span>
+                      <strong>{formatPrice(totalFinal)}</strong>
                     </div>
                   </div>
 

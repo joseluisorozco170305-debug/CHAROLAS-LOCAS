@@ -108,3 +108,36 @@ export const suscribirseATodosLosPedidos = (onChange: () => void) => {
     supabase.removeChannel(channel);
   };
 };
+
+/**
+ * Borra un pedido (cancelado o sin respuesta). Al no existir, ya no suma
+ * en el total del día. Requiere haber corrido supabase/local_y_eliminar.sql.
+ */
+export const eliminarPedido = async (id: string) => {
+  const { data, error } = await supabase
+    .from("pedidos")
+    .delete()
+    .eq("id", id)
+    .select("id");
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data?.length) {
+    throw new Error("sin-permiso");
+  }
+};
+
+/** Revisa en el servidor la contraseña de la vista del local. */
+export const verificarClaveLocal = async (clave: string) => {
+  const { data, error } = await supabase.rpc("verificar_clave_local", {
+    p_clave: clave,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data === true;
+};

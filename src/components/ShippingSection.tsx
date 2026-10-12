@@ -1,5 +1,15 @@
 import { MapPin, ShoppingBag, Truck } from "lucide-react";
-import { shippingZones } from "../data/envios";
+import { COSTO_POR_KM, RADIO_GRATIS_KM } from "../data/envio";
+
+const tarifas = [
+  { id: "pickup", zone: "Pick up · Recoger en el local", cost: 0 },
+  { id: "gratis", zone: `Hasta ${RADIO_GRATIS_KM} km del local`, cost: 0 },
+  ...[1, 2, 3, 4].map((n) => ({
+    id: `km-${n}`,
+    zone: `De ${RADIO_GRATIS_KM + n - 1} a ${RADIO_GRATIS_KM + n} km`,
+    cost: n * COSTO_POR_KM,
+  })),
+];
 
 export function ShippingSection() {
   return (
@@ -25,11 +35,11 @@ export function ShippingSection() {
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-pink-100 bg-pink-50/40 shadow-xl shadow-pink-100/50">
-          {shippingZones.map((item, index) => (
+          {tarifas.map((item, index) => (
             <div
               key={item.id}
               className={`flex items-center justify-between gap-4 px-5 py-4 sm:px-7 ${
-                index !== shippingZones.length - 1
+                index !== tarifas.length - 1
                   ? "border-b border-pink-100"
                   : ""
               }`}
@@ -53,16 +63,16 @@ export function ShippingSection() {
                     : "bg-white text-pink-700 ring-1 ring-pink-100"
                 }`}
               >
-                {item.displayCost}
+                {item.cost === 0 ? "Sin costo" : `$${item.cost}`}
               </span>
             </div>
           ))}
         </div>
 
         <div className="mt-5 rounded-2xl bg-orange-50 p-4 text-center text-sm font-semibold text-orange-800">
-          En envíos a domicilio, los precios mostrados son aproximados y el
-          costo final se confirma después de recibir la ubicación exacta.
-          Pick up no tiene costo de envío.
+          Y así sucesivamente: +${COSTO_POR_KM} por cada kilómetro extra. Al
+          marcar tu ubicación en el pedido, el envío se calcula solito y se
+          suma a tu total.
         </div>
 
         <p className="mt-5 text-center text-sm font-semibold text-slate-500">

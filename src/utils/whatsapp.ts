@@ -14,6 +14,7 @@ export const buildOrderMessage = (
   orderNumber?: number,
   customerName?: string,
   code?: { codigo: string; porcentaje: number; sobre: string; monto: number },
+  envio?: { costo: number; distancia: string },
 ) => {
   const lines = [
     "🍓 *CHAROLAS LOCAS*",
@@ -59,6 +60,12 @@ export const buildOrderMessage = (
   if (code && code.monto > 0) {
     lines.push(
       `Código ${code.codigo} (${code.porcentaje}% sobre ${code.sobre}): -${formatPrice(code.monto)}`,
+    );
+  }
+
+  if (envio) {
+    lines.push(
+      `Envío (${envio.distancia}): ${envio.costo > 0 ? formatPrice(envio.costo) : "Gratis"}`,
     );
   }
 

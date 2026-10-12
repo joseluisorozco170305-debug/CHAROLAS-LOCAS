@@ -5,13 +5,11 @@ import { supabase } from "../lib/supabaseClient";
 import { CodigosDescuento } from "./admin/CodigosDescuento";
 import { EditarProductos } from "./admin/EditarProductos";
 import { HistorialPedidos } from "./admin/HistorialPedidos";
-import { PedidosHoy } from "./admin/PedidosHoy";
 
-type Pestana = "hoy" | "historial" | "productos" | "descuentos";
+type Pestana = "historial" | "productos" | "descuentos";
 
 const pestanas: { id: Pestana; label: string }[] = [
-  { id: "hoy", label: "Pedidos de hoy" },
-  { id: "historial", label: "Historial" },
+  { id: "historial", label: "Pedidos" },
   { id: "productos", label: "Productos" },
   { id: "descuentos", label: "Descuentos" },
 ];
@@ -21,7 +19,7 @@ export function AdminPedidos() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [pestana, setPestana] = useState<Pestana>("hoy");
+  const [pestana, setPestana] = useState<Pestana>("historial");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -142,7 +140,6 @@ export function AdminPedidos() {
         </div>
 
         <div className="mt-6">
-          {pestana === "hoy" && <PedidosHoy />}
           {pestana === "historial" && <HistorialPedidos />}
           {pestana === "productos" && <EditarProductos />}
           {pestana === "descuentos" && <CodigosDescuento />}

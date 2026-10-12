@@ -70,7 +70,7 @@ const productSearchText = (product: MenuProduct) => {
   );
 };
 
-export function MenuSection() {
+export function MenuSection({ compact = false }: { compact?: boolean }) {
   const menu = useMenuConPrecios();
   const [category, setCategory] = useState("todos");
   const [drinkSection, setDrinkSection] = useState("frappes");
@@ -141,12 +141,17 @@ export function MenuSection() {
     categorias.find((item) => item.id === categoryId)?.icono ?? "🍽️";
 
   return (
-    <section id="menu" className="relative overflow-hidden py-20 sm:py-24">
+    <section
+      id="menu"
+      className={`relative overflow-hidden ${compact ? "py-6" : "py-20 sm:py-24"}`}
+    >
       <div className="pointer-events-none absolute -left-24 top-12 h-64 w-64 rounded-full bg-pink-200/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 top-40 h-72 w-72 rounded-full bg-fuchsia-200/20 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 text-2xl opacity-30">💗 ✨ 💕</div>
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-11 max-w-3xl text-center">
+        <div
+          className={`mx-auto mb-11 max-w-3xl text-center ${compact ? "hidden" : ""}`}
+        >
           <p className="soft-heading text-base font-extrabold tracking-[.08em] text-pink-500">
             Nuestro menú
           </p>
@@ -298,7 +303,11 @@ export function MenuSection() {
         )}
 
         {products.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-7">
+          <div
+            className={`grid gap-6 sm:grid-cols-2 xl:gap-7 ${
+              compact ? "xl:grid-cols-3" : "lg:grid-cols-3"
+            }`}
+          >
             {products.map((product) => (
               <ProductCard
                 key={product.id}
