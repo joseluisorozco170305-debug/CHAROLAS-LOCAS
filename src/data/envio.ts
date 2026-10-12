@@ -5,7 +5,7 @@ import type { Coords } from "../utils/ubicacion";
  * Cambia SOLO estos dos números por las coordenadas exactas de Charolas Locas.
  * (Google Maps → mantén presionado sobre el local → copia los números de arriba)
  */
-export const LOCAL_COORDS: Coords = { lat: 19.649250501706597, lng: -99.16894609003474 };
+export const LOCAL_COORDS: Coords = { lat: 19.64921008537192, lng: -99.16924649743758 };
 
 /** Radio (km) alrededor del local sin costo de envío. */
 export const RADIO_GRATIS_KM = 2;
