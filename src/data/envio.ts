@@ -7,7 +7,7 @@ import type { Coords } from "../utils/ubicacion";
  */
 export const LOCAL_COORDS: Coords = { lat: 19.64921008537192, lng: -99.16924649743758 };
 
-/** Radio (km) alrededor del local sin costo de envío. */
+/** Kilómetros (recorridos por calle) desde el local sin costo de envío. */
 export const RADIO_GRATIS_KM = 2;
 
 /** Lo que se cobra por cada kilómetro (o fracción) después del radio gratis. */
@@ -37,9 +37,60 @@ export const costoEnvioPorDistancia = (km: number) =>
     ? 0
     : Math.ceil(km - RADIO_GRATIS_KM - 1e-9) * COSTO_POR_KM;
 
-export const calcularEnvio = (destino: Coords) => {
-  const km = distanciaKm(LOCAL_COORDS, destino);
-  return { km, costo: costoEnvioPorDistancia(km) };
+export interface RutaEnvio {
+  /** Kilómetros a recorrer por calle. */
+  km: number;
+  costo: number;
+  /** true si no se pudo trazar la ruta y se estimó la distancia. */
+  aprox: boolean;
+  /** Puntos [lat, lng] de la ruta para dibujarla en el mapa. */
+  linea: [number, number][];
+}
+
+/** Las calles casi nunca van derecho; si no hay ruta se estima así. */
+const FACTOR_CALLES = 1.3;
+
+/**
+ * Calcula la distancia POR CALLES (en moto/coche) del local al cliente
+ * usando OSRM / OpenStreetMap (gratis, sin API key).
+ */
+export const calcularEnvioPorCalles = async (
+  destino: Coords,
+): Promise<RutaEnvio> => {
+  const control = new AbortController();
+  const timer = window.setTimeout(() => control.abort(), 8000);
+
+  try {
+    const puntos = `${LOCAL_COORDS.lng},${LOCAL_COORDS.lat};${destino.lng},${destino.lat}`;
+    const res = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${puntos}?overview=full&geometries=geojson`,
+      { signal: control.signal },
+    );
+    if (!res.ok) throw new Error("ruta");
+
+    const data = (await res.json()) as {
+      code: string;
+      routes?: {
+        distance: number;
+        geometry: { coordinates: [number, number][] };
+      }[];
+    };
+    const ruta = data.routes?.[0];
+    if (data.code !== "Ok" || !ruta) throw new Error("ruta");
+
+    const km = ruta.distance / 1000;
+    return {
+      km,
+      costo: costoEnvioPorDistancia(km),
+      aprox: false,
+      linea: ruta.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+    };
+  } catch {
+    const km = distanciaKm(LOCAL_COORDS, destino) * FACTOR_CALLES;
+    return { km, costo: costoEnvioPorDistancia(km), aprox: true, linea: [] };
+  } finally {
+    window.clearTimeout(timer);
+  }
 };
 
 export const formatKm = (km: number) =>

@@ -10,7 +10,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { categorias } from "../data/categorias";
 import { useMenuConPrecios } from "../hooks/useMenuConPrecios";
@@ -19,7 +19,12 @@ import type { CartItem } from "../types/cart";
 import { formatPrice } from "../utils/formatPrice";
 import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
 import { googleMapsLink, type Coords } from "../utils/ubicacion";
-import { calcularEnvio, formatKm, RADIO_GRATIS_KM } from "../data/envio";
+import {
+  calcularEnvioPorCalles,
+  formatKm,
+  RADIO_GRATIS_KM,
+  type RutaEnvio,
+} from "../data/envio";
 import { LocationPicker } from "./LocationPicker";
 import { ProductConfigurator } from "./ProductConfigurator";
 
@@ -64,14 +69,39 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const isPickup = deliveryMethod === "pickup";
   const isDelivery = deliveryMethod === "delivery";
   const locationUrl = coords ? googleMapsLink(coords) : "";
-  const envio = isDelivery && coords ? calcularEnvio(coords) : null;
+  // Distancia por calles (se calcula en internet cada que mueven el pin).
+  const claveRuta = coords
+    ? `${coords.lat.toFixed(5)},${coords.lng.toFixed(5)}`
+    : null;
+  const [rutaCalculada, setRutaCalculada] = useState<{
+    clave: string;
+    ruta: RutaEnvio;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!isDelivery || !coords || !claveRuta) return;
+    let vigente = true;
+    calcularEnvioPorCalles(coords).then((ruta) => {
+      if (vigente) setRutaCalculada({ clave: claveRuta, ruta });
+    });
+    return () => {
+      vigente = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDelivery, claveRuta]);
+
+  const envio =
+    isDelivery && rutaCalculada && rutaCalculada.clave === claveRuta
+      ? rutaCalculada.ruta
+      : null;
+  const calculandoEnvio = isDelivery && !!coords && !envio;
   const costoEnvio = envio?.costo ?? 0;
   const totalFinal = total + costoEnvio;
   const deliveryLabel = isPickup
     ? "Pick up · Recoger en el local"
     : isDelivery
       ? envio
-        ? `Envío a domicilio · ${formatKm(envio.km)} · ${costoEnvio > 0 ? formatPrice(costoEnvio) : "envío gratis"}`
+        ? `Envío a domicilio · ${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle · ${costoEnvio > 0 ? formatPrice(costoEnvio) : "envío gratis"}`
         : "Envío a domicilio"
       : "";
 
@@ -93,7 +123,10 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             }
           : undefined,
         envio
-          ? { costo: costoEnvio, distancia: formatKm(envio.km) }
+          ? {
+              costo: costoEnvio,
+              distancia: `${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle`,
+            }
           : undefined,
       ),
       "",
@@ -165,7 +198,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     items.length > 0 &&
     !!customerName.trim() &&
     !!deliveryMethod &&
-    (isPickup || !!coords) &&
+    (isPickup || (!!coords && !!envio)) &&
     !sending;
 
   const productoEnEdicion = editingItem
@@ -531,7 +564,17 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           Así no tienes que mandárnosla por WhatsApp.
                         </p>
 
-                        <LocationPicker value={coords} onChange={setCoords} />
+                        <LocationPicker
+                          value={coords}
+                          onChange={setCoords}
+                          ruta={envio?.linea}
+                        />
+
+                        {calculandoEnvio && (
+                          <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-500 ring-1 ring-orange-200">
+                            Calculando el envío por calles…
+                          </p>
+                        )}
 
                         {envio && (
                           <p
@@ -541,15 +584,16 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                                 : "bg-white text-slate-700 ring-1 ring-orange-200"
                             }`}
                           >
-                            Estás a {formatKm(envio.km)} del local ·{" "}
+                            Estás a {formatKm(envio.km)}
+                            {envio.aprox ? " aprox." : ""} del local por calle ·{" "}
                             {costoEnvio === 0
                               ? "¡envío gratis! 🎉"
                               : `envío ${formatPrice(costoEnvio)}`}
                           </p>
                         )}
                         <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Gratis a menos de {RADIO_GRATIS_KM} km; después +$5 por
-                          cada km.
+                          Gratis hasta {RADIO_GRATIS_KM} km recorridos por calle;
+                          después +$5 por cada km.
                         </p>
                       </div>
                     )}
@@ -583,7 +627,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         Costo de envío
                         {envio && (
                           <span className="block text-xs font-semibold text-slate-400">
-                            {formatKm(envio.km)} del local
+                            {formatKm(envio.km)} por calle
                           </span>
                         )}
                       </span>
@@ -592,7 +636,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           ? "—"
                           : isPickup
                             ? "Sin costo"
-                            : !envio
+                            : calculandoEnvio
+                              ? "Calculando…"
+                              : !envio
                               ? "Marca tu ubicación"
                               : costoEnvio > 0
                                 ? formatPrice(costoEnvio)

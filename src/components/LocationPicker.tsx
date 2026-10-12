@@ -2,7 +2,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Check, Loader2, Navigation, Search, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { LOCAL_COORDS, RADIO_GRATIS_KM } from "../data/envio";
+import { LOCAL_COORDS } from "../data/envio";
 import type { Coords } from "../utils/ubicacion";
 
 interface ResultadoBusqueda {
@@ -39,6 +39,8 @@ const buscarDireccion = async (texto: string): Promise<ResultadoBusqueda[]> => {
 interface LocationPickerProps {
   value: Coords | null;
   onChange: (coords: Coords | null) => void;
+  /** Ruta por calles del local al cliente, para dibujarla. */
+  ruta?: [number, number][];
 }
 
 // Centro inicial del mapa: el local
@@ -56,10 +58,11 @@ const pinIcon = L.divIcon({
   iconSize: [0, 0],
 });
 
-export function LocationPicker({ value, onChange }: LocationPickerProps) {
+export function LocationPicker({ value, onChange, ruta }: LocationPickerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  const rutaRef = useRef<L.Polyline | null>(null);
   const onChangeRef = useRef(onChange);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,15 +112,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       attribution: "© OpenStreetMap",
     }).addTo(map);
 
-    // Local + radio de envío gratis
-    L.circle(DEFAULT_CENTER, {
-      radius: RADIO_GRATIS_KM * 1000,
-      color: "#db2777",
-      weight: 1.5,
-      fillColor: "#f472b6",
-      fillOpacity: 0.08,
-      interactive: false,
-    }).addTo(map);
+    // El local
     L.marker(DEFAULT_CENTER, { icon: localIcon, interactive: false }).addTo(
       map,
     );
@@ -140,9 +135,28 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
+      rutaRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Dibuja la ruta por calles del local al cliente.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    rutaRef.current?.remove();
+    rutaRef.current = null;
+
+    if (ruta && ruta.length > 1) {
+      rutaRef.current = L.polyline(ruta, {
+        color: "#db2777",
+        weight: 5,
+        opacity: 0.8,
+        interactive: false,
+      }).addTo(map);
+    }
+  }, [ruta]);
 
   // Si el valor se limpia desde afuera, se quita el pin.
   useEffect(() => {
@@ -287,7 +301,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
 
       <p className="mt-3 text-center text-xs font-bold text-slate-500">
         o toca el mapa para marcar dónde te lo llevamos (puedes arrastrar el pin).
-        El círculo rosa 🍓 es la zona de envío gratis.
+        La 🍓 es el local; la línea rosa es el camino por calles.
       </p>
 
       <div

@@ -3,7 +3,7 @@ import { COSTO_POR_KM, RADIO_GRATIS_KM } from "../data/envio";
 
 const tarifas = [
   { id: "pickup", zone: "Pick up · Recoger en el local", cost: 0 },
-  { id: "gratis", zone: `Hasta ${RADIO_GRATIS_KM} km del local`, cost: 0 },
+  { id: "gratis", zone: `Hasta ${RADIO_GRATIS_KM} km del local (por calle)`, cost: 0 },
   ...[1, 2, 3, 4].map((n) => ({
     id: `km-${n}`,
     zone: `De ${RADIO_GRATIS_KM + n - 1} a ${RADIO_GRATIS_KM + n} km`,
