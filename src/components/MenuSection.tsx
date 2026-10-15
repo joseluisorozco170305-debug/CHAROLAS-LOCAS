@@ -7,12 +7,13 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { categorias } from "../data/categorias";
 import { useFavorites } from "../hooks/useFavorites";
-import { useMenuConPrecios } from "../hooks/useMenuConPrecios";
+import { useMenuConPreciosEstado } from "../hooks/useMenuConPrecios";
 import type { MenuProduct } from "../types/product";
 import { MENU_CATEGORY_EVENT } from "../utils/menuEvents";
 import { DiscountCodeBox } from "./DiscountCodeBox";
 import { ProductCard } from "./ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
+import { ProductCardSkeleton } from "./Skeletons";
 
 const normalize = (value: string) =>
   value
@@ -71,7 +72,7 @@ const productSearchText = (product: MenuProduct) => {
 };
 
 export function MenuSection({ compact = false }: { compact?: boolean }) {
-  const menu = useMenuConPrecios();
+  const { menu, cargando } = useMenuConPreciosEstado();
   const [category, setCategory] = useState("todos");
   const [drinkSection, setDrinkSection] = useState("frappes");
   const [search, setSearch] = useState("");
@@ -302,7 +303,19 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
           </div>
         )}
 
-        {products.length > 0 ? (
+        {cargando ? (
+          <div
+            role="status"
+            aria-label="Cargando menú"
+            className={`grid gap-6 sm:grid-cols-2 xl:gap-7 ${
+              compact ? "xl:grid-cols-3" : "lg:grid-cols-3"
+            }`}
+          >
+            {Array.from({ length: 6 }, (_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : products.length > 0 ? (
           <div
             className={`grid gap-6 sm:grid-cols-2 xl:gap-7 ${
               compact ? "xl:grid-cols-3" : "lg:grid-cols-3"

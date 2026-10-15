@@ -1,19 +1,15 @@
 import { MapPin, ShoppingBag, Truck } from "lucide-react";
-import {
-  COSTO_POR_KM,
-  costoEnvioPorDistancia,
-  RADIO_GRATIS_KM,
-} from "../data/envio";
+import { COSTO_POR_KM, costoFueraDeZona } from "../data/envio";
 
 const tarifas = [
   { id: "pickup", zone: "Pick up · Recoger en el local", cost: 0 },
-  { id: "gratis", zone: `Hasta ${RADIO_GRATIS_KM} km del local (por calle)`, cost: 0 },
-  ...[1, 2, 3, 4].map((n) => ({
-    id: `km-${n}`,
-    zone: `De ${RADIO_GRATIS_KM + n - 1} a ${RADIO_GRATIS_KM + n} km`,
-    cost: costoEnvioPorDistancia(RADIO_GRATIS_KM + n - 0.5),
+  { id: "gratis", zone: "Dentro de nuestra zona de reparto", cost: 0 },
+  ...[2, 2.5, 3, 4, 5].map((km) => ({
+    id: `km-${km}`,
+    zone: `Fuera de zona · ${km} km del local`,
+    cost: costoFueraDeZona(km),
   })),
-];
+]
 
 export function ShippingSection() {
   return (
@@ -74,9 +70,10 @@ export function ShippingSection() {
         </div>
 
         <div className="mt-5 rounded-2xl bg-orange-50 p-4 text-center text-sm font-semibold text-orange-800">
-          Y así sucesivamente: +${COSTO_POR_KM} por cada kilómetro extra. Al
-          marcar tu ubicación en el pedido, el envío se calcula solito y se
-          suma a tu total.
+          Fuera de la zona se cobran ${COSTO_POR_KM} por cada kilómetro de ruta
+          desde el local (${COSTO_POR_KM / 2} por medio km). Al marcar tu
+          ubicación verás la zona y la ruta en el mapa, y el envío se suma
+          solito a tu total.
         </div>
 
         <p className="mt-5 text-center text-sm font-semibold text-slate-500">

@@ -1,12 +1,85 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>charolas-locas</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo-256.jpg" />
+    <meta name="theme-color" content="#db2777" />
+
+    <title>Charolas Locas · Fresas con crema, snacks y charolas</title>
+    <meta
+      name="description"
+      content="Fresas con crema, snacks calientes, charolas locas y drinks preparados al momento. Arma tu pedido en línea y recíbelo en casa o pásalo a recoger."
+    />
+
+    <!--
+      Vista previa al compartir el link (WhatsApp, Facebook, etc.).
+      👇 Si tu página tiene otro dominio, cámbialo en og:url y og:image.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content="Charolas Locas" />
+    <meta property="og:url" content="https://charolas-locas.vercel.app/" />
+    <meta property="og:title" content="Charolas Locas 🍓 Pide en línea" />
+    <meta
+      property="og:description"
+      content="Fresas con crema, snacks, charolas y drinks preparados al momento. Arma tu pedido y te lo llevamos."
+    />
+    <meta property="og:image" content="https://charolas-locas.vercel.app/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://charolas-locas.vercel.app/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logo de Charolas Locas: fresas con crema, snacks y charolas" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Charolas Locas 🍓 Pide en línea" />
+    <meta name="twitter:image" content="https://charolas-locas.vercel.app/og-image.jpg" />
+
+    <style>
+      /* Pantalla de carga: se ve al instante, antes de que cargue la app */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 80% 10%, #ffedd5 0, transparent 40%),
+          radial-gradient(circle at 15% 90%, #fce7f3 0, transparent 45%), #fff8fb;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+      }
+      #splash.oculto { opacity: 0; visibility: hidden; }
+      #splash .caja { text-align: center; font-family: system-ui, sans-serif; }
+      #splash img {
+        width: 112px; height: 112px; border-radius: 28px;
+        box-shadow: 0 18px 40px rgba(219, 39, 119, 0.25);
+        animation: latido 1.2s ease-in-out infinite;
+      }
+      #splash .barra {
+        width: 140px; height: 6px; margin: 26px auto 0; border-radius: 99px;
+        background: #fce7f3; overflow: hidden;
+      }
+      #splash .barra::after {
+        content: ""; display: block; width: 40%; height: 100%; border-radius: 99px;
+        background: linear-gradient(90deg, #db2777, #f97316);
+        animation: barra 1s ease-in-out infinite;
+      }
+      #splash p { margin-top: 14px; font-weight: 800; color: #be185d; font-size: 14px; letter-spacing: .04em; }
+      @keyframes latido { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      @keyframes barra { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+      @media (prefers-reduced-motion: reduce) {
+        #splash img, #splash .barra::after { animation: none; }
+      }
+    </style>
   </head>
   <body>
+    <div id="splash" role="status" aria-label="Cargando Charolas Locas">
+      <div class="caja">
+        <img src="/logo-256.jpg" alt="" />
+        <div class="barra"></div>
+        <p>Preparando tus antojos…</p>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

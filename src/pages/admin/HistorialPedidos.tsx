@@ -7,6 +7,7 @@ import {
 } from "../../services/pedidosService";
 import { fechaMexicoISO } from "../../utils/fecha";
 import { BotonDesplegar, DetallePedido } from "./DetallePedido";
+import { PedidoSkeleton } from "../../components/Skeletons";
 import type { PedidoDB } from "../../types/pedido";
 import type { CartItem } from "../../types/cart";
 import { formatPrice } from "../../utils/formatPrice";
@@ -129,7 +130,14 @@ export function HistorialPedidos() {
         className="rounded-2xl border border-pink-200 bg-white p-3 text-sm font-bold outline-none"
       />
 
-      {cargando && <p className="mt-4 text-slate-500">Cargando...</p>}
+      {cargando && (
+        <div role="status" aria-label="Cargando pedidos" className="mt-4 space-y-3">
+          <div className="h-4 w-56 animate-pulse rounded-full bg-pink-100/70" />
+          {Array.from({ length: 4 }, (_, i) => (
+            <PedidoSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {error && <p className="mt-4 font-bold text-red-600">{error}</p>}
 

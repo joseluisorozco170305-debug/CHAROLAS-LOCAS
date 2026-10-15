@@ -21,8 +21,8 @@ import { buildOrderMessage, whatsappUrl } from "../utils/whatsapp";
 import { googleMapsLink, type Coords } from "../utils/ubicacion";
 import {
   calcularEnvioPorCalles,
+  COSTO_POR_KM,
   formatKm,
-  RADIO_GRATIS_KM,
   type RutaEnvio,
 } from "../data/envio";
 import { LocationPicker } from "./LocationPicker";
@@ -101,7 +101,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     ? "Pick up · Recoger en el local"
     : isDelivery
       ? envio
-        ? `Envío a domicilio · ${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle · ${costoEnvio > 0 ? formatPrice(costoEnvio) : "envío gratis"}`
+        ? `Envío a domicilio · ${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle · ${envio.dentro ? "zona gratis" : formatPrice(costoEnvio)}`
         : "Envío a domicilio"
       : "";
 
@@ -586,14 +586,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           >
                             Estás a {formatKm(envio.km)}
                             {envio.aprox ? " aprox." : ""} del local por calle ·{" "}
-                            {costoEnvio === 0
-                              ? "¡envío gratis! 🎉"
-                              : `envío ${formatPrice(costoEnvio)}`}
+                            {envio.dentro
+                              ? "dentro de la zona, ¡envío gratis! 🎉"
+                              : `fuera de la zona, envío ${formatPrice(costoEnvio)}`}
                           </p>
                         )}
                         <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Gratis hasta {RADIO_GRATIS_KM} km recorridos por calle;
-                          después desde $10 y +$5 por cada km.
+                          Gratis dentro de la zona rosa. Fuera de ella,{" "}
+                          {formatPrice(COSTO_POR_KM)} por km de ruta desde el local
+                          (por medio km, {formatPrice(COSTO_POR_KM / 2)}).
                         </p>
                       </div>
                     )}

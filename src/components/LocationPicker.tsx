@@ -2,7 +2,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Check, Loader2, Navigation, Search, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { LOCAL_COORDS } from "../data/envio";
+import { LOCAL_COORDS, ZONA_GRATIS } from "../data/envio";
 import type { Coords } from "../utils/ubicacion";
 
 interface ResultadoBusqueda {
@@ -103,7 +103,7 @@ export function LocationPicker({ value, onChange, ruta }: LocationPickerProps) {
 
     const map = L.map(containerRef.current, {
       center: value ? [value.lat, value.lng] : DEFAULT_CENTER,
-      zoom: value ? 17 : 13,
+      zoom: value ? 17 : 14,
       zoomControl: true,
     });
 
@@ -111,6 +111,19 @@ export function LocationPicker({ value, onChange, ruta }: LocationPickerProps) {
       maxZoom: 19,
       attribution: "© OpenStreetMap",
     }).addTo(map);
+
+    // Zona de envío gratis
+    // (un solo trazo con todos los pedazos para que no se vean las uniones)
+    L.polygon(
+      ZONA_GRATIS.map((poligono) => [poligono]),
+      {
+        stroke: false,
+        fillColor: "#f472b6",
+        fillOpacity: 0.25,
+        fillRule: "nonzero",
+        interactive: false,
+      },
+    ).addTo(map);
 
     // El local
     L.marker(DEFAULT_CENTER, { icon: localIcon, interactive: false }).addTo(
@@ -301,7 +314,7 @@ export function LocationPicker({ value, onChange, ruta }: LocationPickerProps) {
 
       <p className="mt-3 text-center text-xs font-bold text-slate-500">
         o toca el mapa para marcar dónde te lo llevamos (puedes arrastrar el pin).
-        La 🍓 es el local; la línea rosa es el camino por calles.
+        La 🍓 es el local, lo rosa es la zona de envío gratis y la línea es la ruta.
       </p>
 
       <div

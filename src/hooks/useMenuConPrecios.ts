@@ -16,13 +16,18 @@ const enTemporada = (producto: MenuProduct) =>
  * como está en el código, así que la tienda nunca se queda sin mostrar
  * precios.
  */
-export const useMenuConPrecios = () => {
+/** Si Supabase tarda más que esto, se muestra el menú del código. */
+const ESPERA_MAXIMA_MS = 2500;
+
+export const useMenuConPreciosEstado = () => {
   const [menuActual, setMenuActual] = useState<MenuProduct[]>(() =>
     menuBase.filter(enTemporada),
   );
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     let cancelado = false;
+    const limite = window.setTimeout(() => setCargando(false), ESPERA_MAXIMA_MS);
 
     Promise.all([listarPreciosOverride(), listarDescripcionesOverride()])
       .then(([precios, descripciones]) => {
@@ -69,12 +74,19 @@ export const useMenuConPrecios = () => {
       })
       .catch(() => {
         // Si falla la consulta, se queda con los valores del código.
+      })
+      .finally(() => {
+        window.clearTimeout(limite);
+        if (!cancelado) setCargando(false);
       });
 
     return () => {
       cancelado = true;
+      window.clearTimeout(limite);
     };
   }, []);
 
-  return menuActual;
+  return { menu: menuActual, cargando };
 };
+
+export const useMenuConPrecios = () => useMenuConPreciosEstado().menu;
