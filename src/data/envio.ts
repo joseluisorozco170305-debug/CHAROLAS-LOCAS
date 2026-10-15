@@ -31,9 +31,9 @@ export const distanciaKm = (a: Coords, b: Coords) => {
 
 /**
  * 0 – 2 km  → $0
- * 2 – 3 km  → $10
- * 3 – 4 km  → $15
- * 4 – 5 km  → $20
+ * 2 – 3 km  → $20
+ * 3 – 4 km  → $25
+ * 4 – 5 km  → $30
  * …y así, +$5 por cada kilómetro extra.
  */
 export const costoEnvioPorDistancia = (km: number) => {
