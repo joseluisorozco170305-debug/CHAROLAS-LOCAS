@@ -1,75 +1,41 @@
-# React + TypeScript + Vite
+# Charolas Locas 🍓
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Página de pedidos de Charolas Locas: menú, carrito, envío por zona y ruta,
+modo local para la tablet y panel del equipo.
 
-Currently, two official plugins are available:
+Diseñada y desarrollada por **Tomate Desarrollo Web**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Correr en tu compu
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Crea un `.env.local` copiando `.env.example` y pon tus valores.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Variables de entorno
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Variable | Para qué |
+|---|---|
+| `VITE_SUPABASE_URL` | URL de tu proyecto de Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Llave pública (anon) de Supabase |
+| `VITE_SITE_URL` | Dominio público, sin `/` al final (canonical, vista previa en WhatsApp y sitemap) |
 
-```
+En Vercel van en **Settings → Environment Variables**. Después de cambiarlas,
+vuelve a desplegar.
+
+## Rutas
+
+| Ruta | Qué es | Google |
+|---|---|---|
+| `/` | Menú y pedidos | Sí aparece |
+| `/local` | Tablet del local (con contraseña) | No |
+| `/admin` | Panel del equipo (con login) | No |
+
+Los títulos, descripciones e imagen de cada ruta están en `src/shell/seo.ts`.
+Al hacer `npm run build` se generan el HTML de cada ruta, `sitemap.xml` y `robots.txt`.
+
+## Supabase
+
+Los scripts para correr en el **SQL Editor** están en `supabase/`.

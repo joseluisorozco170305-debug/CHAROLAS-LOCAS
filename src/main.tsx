@@ -4,6 +4,12 @@ import { AppRouter } from "./AppRouter";
 import { CartProvider } from "./context/CartContext";
 import "../index.css";
 
+console.info(
+  "%c🍓 Charolas Locas%c\nSitio diseñado y desarrollado por Tomate Desarrollo Web",
+  "font:900 18px system-ui;color:#db2777",
+  "font:600 12px system-ui;color:#7c2d56",
+);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <CartProvider>

@@ -38,7 +38,7 @@ function App() {
     <div className="min-h-screen bg-[#fff8fb] pb-20 text-slate-900 md:pb-0">
       <header className="sticky top-0 z-40 border-b border-pink-100 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="#inicio" className="flex items-center gap-3">
+          <a href="#inicio" className="flex items-center gap-3" aria-label="Charolas Locas, ir al inicio">
             <img
               src={logo}
               alt="Logo CHAROLAS LOCAS"

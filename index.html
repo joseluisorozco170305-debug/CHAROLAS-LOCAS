@@ -1,40 +1,21 @@
 <!doctype html>
+<!--
+  🍓 Charolas Locas
+  Sitio diseñado y desarrollado por Tomate Desarrollo Web.
+-->
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/logo-256.jpg" />
-    <meta name="theme-color" content="#db2777" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <title>Charolas Locas · Fresas con crema, snacks y charolas</title>
-    <meta
-      name="description"
-      content="Fresas con crema, snacks calientes, charolas locas y drinks preparados al momento. Arma tu pedido en línea y recíbelo en casa o pásalo a recoger."
-    />
-
-    <!--
-      Vista previa al compartir el link (WhatsApp, Facebook, etc.).
-      👇 Si tu página tiene otro dominio, cámbialo en og:url y og:image.
-    -->
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="es_MX" />
-    <meta property="og:site_name" content="Charolas Locas" />
-    <meta property="og:url" content="https://charolas-locas.vercel.app/" />
-    <meta property="og:title" content="Charolas Locas 🍓 Pide en línea" />
-    <meta
-      property="og:description"
-      content="Fresas con crema, snacks, charolas y drinks preparados al momento. Arma tu pedido y te lo llevamos."
-    />
-    <meta property="og:image" content="https://charolas-locas.vercel.app/og-image.jpg" />
-    <meta property="og:image:secure_url" content="https://charolas-locas.vercel.app/og-image.jpg" />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Logo de Charolas Locas: fresas con crema, snacks y charolas" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Charolas Locas 🍓 Pide en línea" />
-    <meta name="twitter:image" content="https://charolas-locas.vercel.app/og-image.jpg" />
+    <!-- SEO y vista previa al compartir: lo llena vite.config.ts según la ruta (src/shell/seo.ts) -->
+    <!--seo:start-->
+    <!--seo:end-->
 
     <style>
       /* Pantalla de carga: se ve al instante, antes de que cargue la app */
@@ -80,6 +61,12 @@
         <p>Preparando tus antojos…</p>
       </div>
     </div>
+    <noscript>
+      <p style="padding:24px;text-align:center;font-family:system-ui,sans-serif">
+        Para ver el menú de Charolas Locas y hacer tu pedido necesitas activar
+        JavaScript en tu navegador.
+      </p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

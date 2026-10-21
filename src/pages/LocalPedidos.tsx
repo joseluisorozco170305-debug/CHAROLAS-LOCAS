@@ -357,10 +357,6 @@ export function LocalPedidos() {
     window.scrollTo({ top: 0 });
   }, []);
 
-  useEffect(() => {
-    document.title = "Modo local · Charolas Locas";
-  }, []);
-
   // Pantalla de "pedido listo" se cierra sola para el siguiente cliente.
   useEffect(() => {
     if (pedidoListo === null) return;
