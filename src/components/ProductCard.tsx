@@ -1,4 +1,4 @@
-import { Flame, Heart, ShoppingCart, Sparkles } from "lucide-react";
+import { Clock3, Flame, Heart, Plus, SlidersHorizontal, Sparkles } from "lucide-react";
 import type { MenuProduct } from "../types/product";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
 import { fechaLarga } from "../utils/fecha";
@@ -90,104 +90,128 @@ export function ProductCard({
       .includes("mango");
 
   const emoji = productEmoji(product, icon);
+  const sizeCount = product.sizes?.length ?? 0;
+  const hasOptions = (product.groups?.length ?? 0) > 0;
+  const fromPrice = sizeCount > 1;
 
   return (
-    <article className="group product-card-soft flex h-full flex-col overflow-hidden rounded-[2rem] border border-pink-100/90 bg-white/95 shadow-[0_14px_40px_rgba(244,114,182,0.10)] transition duration-300 hover:-translate-y-1.5 hover:border-pink-200 hover:shadow-[0_22px_55px_rgba(236,72,153,0.16)]">
-      <div className="relative overflow-hidden bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50 px-6 pb-5 pt-6">
-        <div className="absolute -right-10 -top-12 h-32 w-32 rounded-full bg-pink-200/35 blur-sm" />
-        <div className="absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-fuchsia-100/70" />
-        <div className="absolute right-16 top-4 text-sm opacity-60">💗</div>
-        <div className="absolute bottom-5 right-7 text-xs opacity-50">✨</div>
+    <article className="group relative flex h-full flex-col rounded-[1.75rem] border border-pink-100 bg-white p-5 shadow-[0_8px_30px_rgba(244,114,182,0.08)] transition duration-300 hover:-translate-y-1 hover:border-pink-200 hover:shadow-[0_18px_45px_rgba(236,72,153,0.16)] focus-within:ring-4 focus-within:ring-pink-100">
+      {/* Toda la tarjeta abre el producto */}
+      <button
+        type="button"
+        onClick={() => onCustomize(product)}
+        aria-label={`Ver y personalizar ${product.name}`}
+        className="absolute inset-0 z-0 rounded-[1.75rem] outline-none"
+      />
 
-        <div className="relative flex items-start justify-between gap-4">
-          <div className="product-emoji grid h-24 w-24 place-items-center rounded-[2rem] border border-white/90 bg-white/85 text-6xl shadow-[0_10px_25px_rgba(236,72,153,0.12)] transition duration-300 group-hover:scale-105 group-hover:-rotate-2">
-            {emoji}
-          </div>
+      <div className="pointer-events-none relative flex items-start gap-4">
+        <div className="product-emoji grid h-[4.5rem] w-[4.5rem] shrink-0 place-items-center rounded-[1.4rem] bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 text-[2.6rem] ring-1 ring-pink-100 transition duration-300 group-hover:scale-105 group-hover:-rotate-3">
+          {emoji}
+        </div>
 
-          <div className="flex min-w-0 flex-col items-end gap-2">
-            <button
-              type="button"
-              aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
-              onClick={() => onToggleFavorite(product.id)}
-              className={`grid h-11 w-11 place-items-center rounded-2xl border shadow-sm transition active:scale-95 ${
-                favorite
-                  ? "border-pink-300 bg-pink-500 text-white shadow-pink-200"
-                  : "border-white bg-white/95 text-pink-500 hover:bg-pink-50"
-              }`}
-            >
-              <Heart size={20} fill={favorite ? "currentColor" : "none"} />
-            </button>
-
-            <div className="flex max-w-[9rem] flex-wrap justify-end gap-1.5">
+        <div className="min-w-0 flex-1 pr-10">
+          {(product.popular || product.featured || discount > 0) && (
+            <div className="mb-1.5 flex flex-wrap gap-1.5">
+              {discount > 0 && (
+                <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">
+                  -{discount}%
+                </span>
+              )}
               {product.popular && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-400 to-rose-400 px-2.5 py-1 text-[11px] font-black text-white shadow-sm">
-                  <Flame size={12} />
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-orange-700">
+                  <Flame size={11} />
                   Popular
                 </span>
               )}
-
               {product.featured && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-fuchsia-500 to-pink-500 px-2.5 py-1 text-[11px] font-black text-white shadow-sm">
-                  <Sparkles size={12} />
+                <span className="inline-flex items-center gap-1 rounded-full bg-fuchsia-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-fuchsia-700">
+                  <Sparkles size={11} />
                   Destacado
                 </span>
               )}
             </div>
-          </div>
+          )}
+
+          <h3 className="soft-heading text-lg font-extrabold leading-snug text-rose-950">
+            {product.name}
+          </h3>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        <div className="flex-1">
-          <h3 className="soft-heading text-[1.35rem] font-extrabold leading-tight text-rose-950">
-            {product.name}
-          </h3>
+      <button
+        type="button"
+        aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+        aria-pressed={favorite}
+        onClick={() => onToggleFavorite(product.id)}
+        className={`absolute right-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full transition active:scale-90 ${
+          favorite
+            ? "bg-pink-500 text-white shadow-md shadow-pink-200"
+            : "bg-pink-50 text-pink-400 hover:bg-pink-100 hover:text-pink-500"
+        }`}
+      >
+        <Heart size={17} fill={favorite ? "currentColor" : "none"} />
+      </button>
 
-          {asksMangoAvailability && (
-            <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-extrabold text-amber-800">
-              🥭 Preguntar por disponibilidad
-            </div>
+      <p className="pointer-events-none relative mt-3 flex-1 text-sm leading-6 text-rose-950/65">
+        {product.description}
+      </p>
+
+      {(sizeCount > 1 || hasOptions || asksMangoAvailability || product.availableUntil) && (
+        <div className="pointer-events-none relative mt-3 flex flex-wrap gap-1.5">
+          {sizeCount > 1 && (
+            <span className="rounded-lg bg-slate-50 px-2 py-1 text-[11px] font-bold text-slate-500 ring-1 ring-slate-100">
+              {sizeCount} tamaños
+            </span>
           )}
-
+          {hasOptions && (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[11px] font-bold text-slate-500 ring-1 ring-slate-100">
+              <SlidersHorizontal size={11} />
+              Personalizable
+            </span>
+          )}
+          {asksMangoAvailability && (
+            <span className="rounded-lg bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700 ring-1 ring-amber-100">
+              🥭 Pregunta disponibilidad
+            </span>
+          )}
           {product.availableUntil && (
-            <p className="mt-2 inline-flex rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black text-amber-800">
-              ⏳ Por tiempo limitado · hasta el {fechaLarga(product.availableUntil)}
+            <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700 ring-1 ring-amber-100">
+              <Clock3 size={11} />
+              Hasta el {fechaLarga(product.availableUntil)}
+            </span>
+          )}
+        </div>
+      )}
+
+      <div className="pointer-events-none relative mt-4 flex items-end justify-between gap-3 border-t border-dashed border-pink-100 pt-4">
+        <div className="leading-none">
+          {fromPrice && (
+            <p className="mb-1 text-[10px] font-black uppercase tracking-[.16em] text-pink-400">
+              Desde
             </p>
           )}
 
-          <p className="mt-2 text-sm leading-6 text-rose-950/65">
-            {product.description}
-          </p>
-        </div>
-
-        <div className="mt-6 flex items-end justify-between gap-4 border-t border-pink-100 pt-5">
-          <div>
-            {product.sizes?.length ? (
-              <p className="text-[11px] font-black uppercase tracking-[.16em] text-pink-400">
-                Desde
-              </p>
-            ) : null}
+          <div className="flex items-baseline gap-2">
+            <p className="soft-heading text-2xl font-black text-pink-600">
+              {formatPrice(finalPrice)}
+            </p>
 
             {discount > 0 && (
               <p className="text-sm font-bold text-slate-400 line-through">
                 {formatPrice(normalPrice)}
               </p>
             )}
-
-            <p className="soft-heading text-3xl font-black text-pink-500">
-              {formatPrice(finalPrice)}
-            </p>
           </div>
-
-          <button
-            type="button"
-            onClick={() => onCustomize(product)}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-fuchsia-500 px-5 py-3 text-sm font-black text-white shadow-[0_10px_22px_rgba(236,72,153,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(236,72,153,0.30)] active:translate-y-0"
-          >
-            Agregar
-            <ShoppingCart size={16} />
-          </button>
         </div>
+
+        <button
+          type="button"
+          onClick={() => onCustomize(product)}
+          className="pointer-events-auto relative z-10 inline-flex h-11 items-center gap-1.5 rounded-full bg-pink-600 pl-3 pr-4 text-sm font-black text-white shadow-[0_8px_18px_rgba(236,72,153,0.28)] transition hover:bg-pink-700 active:scale-95"
+        >
+          <Plus size={18} strokeWidth={3} />
+          Agregar
+        </button>
       </div>
     </article>
   );

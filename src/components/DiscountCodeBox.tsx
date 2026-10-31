@@ -4,10 +4,12 @@ import { useCart } from "../context/CartContext";
 import { validarCodigo } from "../services/codigosService";
 
 /**
- * Apartado discreto para códigos de descuento (al final del menú).
- * Se ve como un texto pequeño y se abre solo si la persona lo toca.
+ * Apartado discreto para códigos de descuento (al final del menú y en el
+ * carrito). Se ve como un texto pequeño y se abre solo si la persona lo toca.
+ * `compact`: versión para el carrito (sin márgenes grandes; si ya hay código
+ * no se muestra, porque el carrito ya lo enseña en el resumen).
  */
-export function DiscountCodeBox() {
+export function DiscountCodeBox({ compact = false }: { compact?: boolean }) {
   const { codigo, applyCode, removeCode } = useCart();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -41,6 +43,8 @@ export function DiscountCodeBox() {
   };
 
   if (codigo) {
+    if (compact) return null;
+
     return (
       <div className="mt-14 flex flex-col items-center gap-1 text-center">
         <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-700 ring-1 ring-emerald-200">
@@ -64,7 +68,7 @@ export function DiscountCodeBox() {
   }
 
   return (
-    <div className="mt-14 text-center">
+    <div className={compact ? "text-center" : "mt-14 text-center"}>
       {!open ? (
         <button
           type="button"

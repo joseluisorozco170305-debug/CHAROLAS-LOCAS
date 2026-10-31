@@ -82,6 +82,20 @@ const sweetGroups = [
   group("extras", "Extras opcionales", extrasDulces, 0, extrasDulces.length, false),
 ];
 
+/**
+ * Mojitos: S/A = sin alcohol (precio publicado), C/A = con alcohol (+$20).
+ * Se abrevia a propósito para que sea discreto.
+ */
+export const MOJITO_GROUP_ID = "alcohol";
+const grupoMojito = group(
+  MOJITO_GROUP_ID,
+  "Opción",
+  [option("sa", "S/A"), option("ca", "C/A", 20)],
+  1,
+  1,
+  true,
+);
+
 const drinks = [
   ["frappe-vainilla", "Frappé de vainilla", 65],
   ["frappe-chocolate", "Frappé de chocolate", 65],
@@ -121,12 +135,12 @@ const drinks = [
   ["picafresa-con-mango", "Picafresa con mango", 90],
   ["frappe-fresas-con-crema", "Frappé de fresas con crema", 90],
 
-  // Mojitos sin alcohol
-  ["mojito-coco", "Mojito de coco sin alcohol", 75],
-  ["mojito-fresa", "Mojito de fresa sin alcohol", 70],
-  ["mojito-mango", "Mojito de mango sin alcohol", 70],
-  ["mojito-frutos-rojos", "Mojito de frutos rojos sin alcohol", 75],
-  ["mojito-menta-tradicional", "Mojito de menta tradicional sin alcohol", 70],
+  // Mojitos (el precio es S/A; la opción C/A suma $20 — ver grupoMojito)
+  ["mojito-coco", "Mojito de coco", 75],
+  ["mojito-fresa", "Mojito de fresa", 70],
+  ["mojito-mango", "Mojito de mango", 70],
+  ["mojito-frutos-rojos", "Mojito de frutos rojos", 75],
+  ["mojito-menta-tradicional", "Mojito de menta tradicional", 70],
 ] as const;
 
 
@@ -1059,7 +1073,7 @@ const menuCodigo: MenuProduct[] = [
       "bebidas",
       name,
       id.startsWith("mojito-")
-        ? "Mojito refrescante preparado sin alcohol."
+        ? "Mojito refrescante preparado al momento."
         : id.startsWith("frappe-")
           ? "Frappé cremoso preparado al momento."
           : id.startsWith("malteada-")
@@ -1079,6 +1093,7 @@ const menuCodigo: MenuProduct[] = [
           id === "frappe-nutella" ||
           id === "azulitos" ||
           id === "mojito-frutos-rojos",
+        ...(id.startsWith("mojito-") ? { groups: [grupoMojito] } : {}),
       },
     ),
   ),

@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   Heart,
   Search,
   X,
@@ -11,6 +10,11 @@ import { useMenuConPreciosEstado } from "../hooks/useMenuConPrecios";
 import type { MenuProduct } from "../types/product";
 import { MENU_CATEGORY_EVENT } from "../utils/menuEvents";
 import { DiscountCodeBox } from "./DiscountCodeBox";
+import {
+  CategoryGrid,
+  CategoryRail,
+  type CategoriaItem,
+} from "./MenuCategories";
 import { ProductCard } from "./ProductCard";
 import { ProductConfigurator } from "./ProductConfigurator";
 import { ProductCardSkeleton } from "./Skeletons";
@@ -73,7 +77,8 @@ const productSearchText = (product: MenuProduct) => {
 
 export function MenuSection({ compact = false }: { compact?: boolean }) {
   const { menu, cargando } = useMenuConPreciosEstado();
-  const [category, setCategory] = useState("todos");
+  // "inicio" = cuadrícula de categorías (vista principal del menú).
+  const [category, setCategory] = useState(compact ? "todos" : "inicio");
   const [drinkSection, setDrinkSection] = useState("frappes");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] =
@@ -112,6 +117,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
     return menu.filter((product) => {
       const categoryMatches =
         category === "todos" ||
+        category === "inicio" ||
         (category === "favoritos"
           ? favoriteIds.includes(product.id)
           : product.categoryId === category);
@@ -141,10 +147,51 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
   const iconForCategory = (categoryId: string) =>
     categorias.find((item) => item.id === categoryId)?.icono ?? "🍽️";
 
+  const categoryItems = useMemo<CategoriaItem[]>(
+    () => [
+      { id: "todos", nombre: "Todo el menú", cantidad: menu.length },
+      ...(favoriteIds.length > 0
+        ? [
+            {
+              id: "favoritos",
+              nombre: "Mis favoritos",
+              cantidad: menu.filter((p) => favoriteIds.includes(p.id)).length,
+            },
+          ]
+        : []),
+      ...visibleCategories.map((item) => ({
+        id: item.id,
+        nombre: item.nombre,
+        cantidad: menu.filter((p) => p.categoryId === item.id).length,
+      })),
+    ],
+    [menu, favoriteIds, visibleCategories],
+  );
+
+  const scrollTo = (id: string) =>
+    window.requestAnimationFrame(() =>
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
+    );
+
+  const openCategory = (id: string) => {
+    setCategory(id);
+    setSearch("");
+    if (id === "bebidas") setDrinkSection("frappes");
+    scrollTo("menu-vista");
+  };
+
+  const backToCategories = () => {
+    setCategory("inicio");
+    setSearch("");
+    scrollTo("menu-vista");
+  };
+
+  const showCategoryGrid = !compact && category === "inicio" && !normalizedSearch;
+
   return (
     <section
       id="menu"
-      className={`relative overflow-hidden ${compact ? "py-6" : "py-20 sm:py-24"}`}
+      className={`relative overflow-x-clip ${compact ? "py-6" : "py-20 sm:py-24"}`}
     >
       <div className="pointer-events-none absolute -left-24 top-12 h-64 w-64 rounded-full bg-pink-200/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 top-40 h-72 w-72 rounded-full bg-fuchsia-200/20 blur-3xl" />
@@ -220,6 +267,18 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
           )}
         </div>
 
+        <div id="menu-vista" className="scroll-mt-24" />
+
+        {!compact && category !== "inicio" && (
+          <CategoryRail
+            items={categoryItems}
+            active={category}
+            onSelect={openCategory}
+            onBack={backToCategories}
+          />
+        )}
+
+        {compact && (
         <div className="menu-scroll mb-10 flex gap-2.5 overflow-x-auto pb-3">
           <button
             type="button"
@@ -271,6 +330,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
             </button>
           ))}
         </div>
+        )}
 
         {category === "bebidas" && (
           <div className="mb-8 rounded-[1.75rem] border border-pink-100 bg-white/90 p-4 shadow-[0_10px_28px_rgba(244,114,182,0.08)]">
@@ -303,7 +363,9 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
           </div>
         )}
 
-        {cargando ? (
+        {showCategoryGrid ? (
+          <CategoryGrid items={categoryItems} onSelect={openCategory} />
+        ) : cargando ? (
           <div
             role="status"
             aria-label="Cargando menú"
@@ -353,31 +415,11 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
         )}
 
         {category === "bebidas" && drinkSection === "drinks" && (
-          <div className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
-            <div className="flex items-start gap-3">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-amber-100 text-amber-700">
-                <AlertTriangle size={21} />
-              </div>
-
-              <div>
-                <h3 className="font-black text-amber-900">
-                  Información sobre bebidas con alcohol
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-amber-950/80">
-                  Los precios publicados corresponden a mojitos sin alcohol.
-                  La versión con alcohol tiene un costo adicional de $20 y se
-                  gestiona únicamente por WhatsApp, con verificación de mayoría
-                  de edad y solo para servicio a domicilio.
-                </p>
-
-                <p className="mt-2 text-sm font-semibold leading-6 text-red-700">
-                  En el establecimiento no se vende alcohol ni se permite el
-                  ingreso con bebidas alcohólicas.
-                </p>
-              </div>
-            </div>
-          </div>
+          <p className="mt-8 text-center text-[11px] font-semibold leading-5 text-slate-400">
+            S/A: precio publicado · C/A: +$20, solo a domicilio y +18 · En el
+            local no se vende alcohol ni se permite entrar con bebidas
+            alcohólicas.
+          </p>
         )}
 
         <DiscountCodeBox />

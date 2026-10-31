@@ -11,6 +11,7 @@ import {
   visibleGroups,
 } from "../services/menuEngine";
 import { discountedPrice, discountPercent } from "../services/promotionEngine";
+import { MOJITO_GROUP_ID } from "../data/menu";
 import type { CartItem } from "../types/cart";
 import type { MenuProduct } from "../types/product";
 import { formatPrice } from "../utils/formatPrice";
@@ -26,11 +27,20 @@ export function ProductConfigurator({
   onClose,
   editingItem,
 }: ProductConfiguratorProps) {
-  const [configuration, setConfiguration] = useState(() =>
-    editingItem
-      ? createConfigurationFromCartItem(product, editingItem)
-      : createEmptyConfiguration(product),
-  );
+  const [configuration, setConfiguration] = useState(() => {
+    if (editingItem) {
+      return createConfigurationFromCartItem(product, editingItem);
+    }
+
+    const empty = createEmptyConfiguration(product);
+
+    // Mojitos: arranca en S/A (precio publicado).
+    if (empty.selectedOptions[MOJITO_GROUP_ID]) {
+      empty.selectedOptions[MOJITO_GROUP_ID] = ["sa"];
+    }
+
+    return empty;
+  });
 
   const { addItem, updateItem } = useCart();
 
@@ -50,8 +60,6 @@ export function ProductConfigurator({
     `${product.name} ${product.description}`
       .toLocaleLowerCase("es-MX")
       .includes("mango");
-
-  const isMojito = product.id.startsWith("mojito-");
 
   const addToCart = () => {
     if (errors.length > 0) {
@@ -139,19 +147,6 @@ export function ProductConfigurator({
             </div>
           )}
 
-          {isMojito && (
-            <div className="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-4 text-sm text-fuchsia-950">
-              <p className="font-black">
-                🍹 Versión con alcohol: +$20
-              </p>
-              <p className="mt-2 leading-6">
-                Se solicita únicamente por WhatsApp, con verificación de mayoría
-                de edad y solo para servicio a domicilio. El precio mostrado en
-                la página corresponde a la versión sin alcohol.
-              </p>
-            </div>
-          )}
-
           {product.sizes?.length ? (
             <section>
               <h4 className="font-black text-slate-900">Elige un tamaño</h4>
@@ -195,6 +190,48 @@ export function ProductConfigurator({
               group,
               configuration.sizeId,
             );
+
+            // Mojitos: selector chiquito S/A · C/A, sin llamar la atención.
+            if (group.id === MOJITO_GROUP_ID) {
+              return (
+                <section key={group.id} className="flex flex-wrap items-center gap-2">
+                  {group.options.map((option) => {
+                    const active = selected.includes(option.id);
+
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() =>
+                          setConfiguration((current) => ({
+                            ...current,
+                            selectedOptions: {
+                              ...current.selectedOptions,
+                              [group.id]: [option.id],
+                            },
+                          }))
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs font-bold transition ${
+                          active
+                            ? "border-slate-700 bg-slate-800 text-white"
+                            : "border-slate-200 text-slate-500 hover:border-slate-300"
+                        }`}
+                      >
+                        {option.name}
+                        {option.price > 0 && ` +${formatPrice(option.price)}`}
+                      </button>
+                    );
+                  })}
+
+                  {selected.includes("ca") && (
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      Solo a domicilio · +18
+                    </span>
+                  )}
+                </section>
+              );
+            }
 
             return (
               <section key={group.id}>

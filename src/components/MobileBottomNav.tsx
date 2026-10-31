@@ -1,4 +1,4 @@
-import { Cookie, House, ShoppingBag } from "lucide-react";
+import { Cookie, CreditCard, House, ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 interface Props {
@@ -16,7 +16,7 @@ export function MobileBottomNav({ onOpenCart }: Props) {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-pink-100 bg-white/95 px-2 py-2 shadow-[0_-8px_24px_rgba(15,23,42,.08)] backdrop-blur md:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-3 gap-1">
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
         <a href="#inicio" className={itemClass}>
           <span className={badgeClass}>
             <House size={19} />
@@ -29,6 +29,13 @@ export function MobileBottomNav({ onOpenCart }: Props) {
             <Cookie size={19} />
           </span>
           Menú
+        </a>
+
+        <a href="#pago" className={itemClass}>
+          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-slate-950 text-white shadow-md shadow-slate-300">
+            <CreditCard size={19} />
+          </span>
+          <span className="text-slate-900">Pago</span>
         </a>
 
         <button type="button" onClick={onOpenCart} className={itemClass}>

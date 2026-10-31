@@ -140,15 +140,44 @@ export const calcularEnvioPorCalles = async (
     linea,
   });
 
+  const puntos = `${LOCAL_COORDS.lng},${LOCAL_COORDS.lat};${destino.lng},${destino.lat}`;
+
+  for (const servidor of SERVIDORES_RUTA) {
+    try {
+      const ruta = await pedirRuta(`${servidor}${puntos}`);
+      return resultado(
+        ruta.distance / 1000,
+        false,
+        ruta.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+      );
+    } catch {
+      // Prueba con el siguiente servidor.
+    }
+  }
+
+  // Si ningún servidor respondió, se estima para no bloquear el pedido.
+  return resultado(distanciaKm(LOCAL_COORDS, destino) * FACTOR_CALLES, true, []);
+};
+
+/**
+ * Servidores gratis de rutas (OSRM sobre OpenStreetMap). Si el primero falla
+ * o tarda, se usa el segundo.
+ */
+const SERVIDORES_RUTA = [
+  "https://routing.openstreetmap.de/routed-car/route/v1/driving/",
+  "https://router.project-osrm.org/route/v1/driving/",
+];
+
+const ESPERA_RUTA_MS = 4500;
+
+const pedirRuta = async (url: string) => {
   const control = new AbortController();
-  const timer = window.setTimeout(() => control.abort(), 8000);
+  const timer = window.setTimeout(() => control.abort(), ESPERA_RUTA_MS);
 
   try {
-    const puntos = `${LOCAL_COORDS.lng},${LOCAL_COORDS.lat};${destino.lng},${destino.lat}`;
-    const res = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${puntos}?overview=full&geometries=geojson`,
-      { signal: control.signal },
-    );
+    const res = await fetch(`${url}?overview=full&geometries=geojson`, {
+      signal: control.signal,
+    });
     if (!res.ok) throw new Error("ruta");
 
     const data = (await res.json()) as {
@@ -160,14 +189,7 @@ export const calcularEnvioPorCalles = async (
     };
     const ruta = data.routes?.[0];
     if (data.code !== "Ok" || !ruta) throw new Error("ruta");
-
-    return resultado(
-      ruta.distance / 1000,
-      false,
-      ruta.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
-    );
-  } catch {
-    return resultado(distanciaKm(LOCAL_COORDS, destino) * FACTOR_CALLES, true, []);
+    return ruta;
   } finally {
     window.clearTimeout(timer);
   }

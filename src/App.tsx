@@ -1,10 +1,13 @@
 import {
+  ArrowRight,
   Camera,
+  CreditCard,
   MapPin,
   Menu,
   MessageCircle,
   Phone,
   ShoppingBag,
+  UtensilsCrossed,
 } from "lucide-react";
 import { useState } from "react";
 import logo from "./assets/logo-charolas-locas.png";
@@ -73,15 +76,20 @@ function App() {
             <a href="#envios" className="font-bold text-slate-600 hover:text-pink-600">
               Envíos
             </a>
-            <a href="#pago" className="font-bold text-slate-600 hover:text-pink-600">
-              Pago
-            </a>
             <a href="#contacto" className="font-bold text-slate-600 hover:text-pink-600">
               Contacto
             </a>
           </nav>
 
           <div className="flex gap-2">
+            <a
+              href="#pago"
+              className="hidden items-center gap-2 rounded-2xl bg-slate-950 px-4 font-black text-white transition hover:bg-pink-600 sm:inline-flex"
+            >
+              <CreditCard size={18} />
+              Datos de pago
+            </a>
+
             <button
               type="button"
               onClick={() => setCartOpen(true)}
@@ -111,10 +119,10 @@ function App() {
             {[
               ["Inicio", "#inicio"],
               ["Menú", "#menu"],
+              ["💳 Datos de pago", "#pago"],
               ...(hayPromos ? [["Promos", "#promos"]] : []),
               ["Horarios", "#horarios"],
               ["Envíos", "#envios"],
-              ["Pago", "#pago"],
               ["Contacto", "#contacto"],
             ].map(([label, href]) => (
               <a
@@ -134,11 +142,11 @@ function App() {
 
       <main>
         <section id="inicio" className="relative overflow-hidden">
-          <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-pink-200/50 blur-3xl" />
-          <div className="absolute -right-20 top-0 h-80 w-80 rounded-full bg-orange-200/50 blur-3xl" />
+          <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-pink-200/50 blur-3xl" />
+          <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-orange-200/40 blur-3xl" />
 
-          <div className="relative mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-            <div>
+          <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:min-h-[640px] lg:grid-cols-[1.05fr_.95fr] lg:gap-16 lg:px-8 lg:py-20">
+            <div className="text-center lg:text-left">
               <span
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black ring-1 ${
                   status.open
@@ -146,71 +154,85 @@ function App() {
                     : "bg-red-50 text-red-700 ring-red-200"
                 }`}
               >
-                <span
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    status.open ? "bg-emerald-500" : "bg-red-500"
-                  }`}
-                />
+                <span className="relative flex h-2.5 w-2.5">
+                  {status.open && (
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  )}
+                  <span
+                    className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
+                      status.open ? "bg-emerald-500" : "bg-red-500"
+                    }`}
+                  />
+                </span>
                 {status.text}
               </span>
 
-              <p className="mt-7 text-sm font-black uppercase tracking-[.24em] text-orange-500">
-                Dulce · Salado · Completamente loco
-              </p>
-
-              <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-tight sm:text-6xl lg:text-7xl">
+              <h1 className="mt-6 text-5xl font-black leading-[.92] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
                 Tus antojos se ponen
-                <span className="block bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-pink-600 via-rose-500 to-orange-500 bg-clip-text pb-2 text-transparent">
                   más locos.
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+              <p className="mx-auto mt-5 max-w-xl text-lg leading-8 text-slate-600 lg:mx-0">
                 Frutas con crema, snacks, charolas y una sección completa de Drinks.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-8 grid gap-3 sm:mx-auto sm:max-w-md sm:grid-cols-2 lg:mx-0">
                 <a
                   href="#menu"
-                  className="rounded-2xl bg-pink-600 px-6 py-4 text-center font-black text-white shadow-xl shadow-pink-200"
+                  className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-pink-600 px-6 py-4 font-black text-white shadow-xl shadow-pink-200 transition hover:-translate-y-0.5 hover:bg-pink-700"
                 >
+                  <UtensilsCrossed size={19} />
                   Ver menú
-                </a>
-
-                <a
-                  href={whatsappUrl()}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-6 py-4 font-black text-white"
-                >
-                  <MessageCircle size={19} />
-                  Pedir por WhatsApp
+                  <ArrowRight
+                    size={18}
+                    className="transition group-hover:translate-x-1"
+                  />
                 </a>
 
                 <a
                   href={config.maps}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-black ring-1 ring-slate-200"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-900 ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:ring-pink-300"
                 >
-                  <MapPin size={19} />
-                  Cómo llegar
+                  <MapPin size={19} className="text-pink-600" />
+                  Ver ubicación
                 </a>
+              </div>
+
+              <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold text-slate-500 lg:justify-start">
+                <span>🍓 Dulce</span>
+                <span>🌶️ Salado</span>
+                <span>🛵 Envío a domicilio</span>
+                <span>🏪 Pick up</span>
               </div>
             </div>
 
-            <div className="mx-auto w-full max-w-lg rounded-[3rem] bg-gradient-to-br from-pink-500 via-fuchsia-400 to-orange-300 p-8 shadow-2xl shadow-pink-200">
-              <video
-                className="aspect-square w-full rounded-[2.3rem] bg-pink-100 object-cover"
-                src="/videos/hero-charolas.mp4"
-                poster="/videos/hero-poster.jpg"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                aria-label="Algunos de los productos de CHAROLAS LOCAS"
-              />
+            <div className="relative mx-auto w-full max-w-md lg:max-w-lg">
+              <div className="absolute -inset-3 rotate-3 rounded-[3rem] bg-gradient-to-br from-pink-500 via-fuchsia-400 to-orange-300 opacity-90" />
+
+              <div className="relative overflow-hidden rounded-[2.6rem] border-[6px] border-white bg-pink-100 shadow-2xl shadow-pink-300/50">
+                <video
+                  className="aspect-[4/5] w-full object-cover"
+                  src="/videos/hero-charolas.mp4"
+                  poster="/videos/hero-poster.jpg"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  aria-label="Algunos de los productos de CHAROLAS LOCAS"
+                />
+              </div>
+
+              <div className="absolute -bottom-5 -left-3 rounded-2xl bg-white px-4 py-3 shadow-xl shadow-pink-200/60 ring-1 ring-pink-100 sm:-left-8">
+                <p className="text-[11px] font-black uppercase tracking-[.18em] text-orange-500">
+                  Hecho al momento
+                </p>
+                <p className="font-black text-slate-900">De todo, para todos 💕</p>
+              </div>
             </div>
           </div>
         </section>
@@ -218,9 +240,9 @@ function App() {
         <PromoSection />
         <FirstTimeSection />
         <MenuSection />
+        <PaymentSection />
         <ScheduleSection />
         <ShippingSection />
-        <PaymentSection />
 
         <section id="contacto" className="bg-white py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -300,7 +322,7 @@ function App() {
         <button
           type="button"
           onClick={() => setCartOpen(true)}
-          className="fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-2xl"
+          className="fixed bottom-24 left-1/2 z-40 md:bottom-5 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-2xl bg-slate-950 px-5 py-4 font-black text-white shadow-2xl"
         >
           <ShoppingBag size={20} />
           Ver pedido ({items.length}) · {formatPrice(total)}

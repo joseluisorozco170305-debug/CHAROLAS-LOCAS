@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Check,
+  CreditCard,
   Minus,
   Pencil,
   Plus,
@@ -25,6 +26,7 @@ import {
   formatKm,
   type RutaEnvio,
 } from "../data/envio";
+import { DiscountCodeBox } from "./DiscountCodeBox";
 import { LocationPicker } from "./LocationPicker";
 import { ProductConfigurator } from "./ProductConfigurator";
 
@@ -58,6 +60,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [coords, setCoords] = useState<Coords | null>(null);
+  const [direccionPin, setDireccionPin] = useState<string | null>(null);
+  const [referencias, setReferencias] = useState("");
+  /** Respaldo: si no pudo marcar el mapa, escribe su dirección a mano. */
+  const [manual, setManual] = useState(false);
+  const [direccionManual, setDireccionManual] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [sentOrder, setSentOrder] = useState<{
@@ -79,7 +86,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   } | null>(null);
 
   useEffect(() => {
-    if (!isDelivery || !coords || !claveRuta) return;
+    if (!isDelivery || manual || !coords || !claveRuta) return;
     let vigente = true;
     calcularEnvioPorCalles(coords).then((ruta) => {
       if (vigente) setRutaCalculada({ clave: claveRuta, ruta });
@@ -88,22 +95,37 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       vigente = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDelivery, claveRuta]);
+  }, [isDelivery, manual, claveRuta]);
 
   const envio =
-    isDelivery && rutaCalculada && rutaCalculada.clave === claveRuta
+    isDelivery && !manual && rutaCalculada && rutaCalculada.clave === claveRuta
       ? rutaCalculada.ruta
       : null;
-  const calculandoEnvio = isDelivery && !!coords && !envio;
+  const calculandoEnvio = isDelivery && !manual && !!coords && !envio;
+  const direccionManualOk = direccionManual.trim().length >= 10;
   const costoEnvio = envio?.costo ?? 0;
   const totalFinal = total + costoEnvio;
   const deliveryLabel = isPickup
     ? "Pick up · Recoger en el local"
     : isDelivery
-      ? envio
-        ? `Envío a domicilio · ${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle · ${envio.dentro ? "zona gratis" : formatPrice(costoEnvio)}`
-        : "Envío a domicilio"
+      ? manual
+        ? "Envío a domicilio · costo por confirmar"
+        : envio
+          ? `Envío a domicilio · ${formatKm(envio.km)}${envio.aprox ? " aprox." : ""} por calle · ${envio.dentro ? "zona gratis" : formatPrice(costoEnvio)}`
+          : "Envío a domicilio"
       : "";
+
+  const zonaParaRegistro = isPickup
+    ? deliveryLabel
+    : manual
+      ? `${deliveryLabel} · ${direccionManual.trim()}`
+      : [
+          deliveryLabel,
+          direccionPin && `Cerca de: ${direccionPin}`,
+          referencias.trim() && `Ref: ${referencias.trim()}`,
+        ]
+          .filter(Boolean)
+          .join(" · ");
 
   const buildFinalMessage = (orderNumber: number) =>
     [
@@ -133,7 +155,18 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       `Método de entrega: ${isPickup ? deliveryLabel : "Envío a domicilio"}`,
       ...(isPickup
         ? ["El cliente recogerá su pedido en el local."]
-        : [`📍 Ubicación: ${locationUrl}`]),
+        : manual
+          ? [
+              `🏠 Dirección: ${direccionManual.trim()}`,
+              "📍 No pude marcar el mapa; ¿me confirman el costo de envío?",
+            ]
+          : [
+              `📍 Ubicación: ${locationUrl}`,
+              ...(direccionPin ? [`🏠 Cerca de: ${direccionPin}`] : []),
+              ...(referencias.trim()
+                ? [`📝 Referencias: ${referencias.trim()}`]
+                : []),
+            ]),
     ].join("\n");
 
   const handleSend = async () => {
@@ -148,8 +181,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       const pedido = await crearPedido({
         nombreCliente: customerName.trim(),
         items,
-        zonaEntrega: deliveryLabel,
-        ubicacionUrl: isPickup ? null : locationUrl,
+        zonaEntrega: zonaParaRegistro,
+        ubicacionUrl: isPickup || manual ? null : locationUrl,
         codigoDescuento: codigo?.codigo ?? null,
         descuentoCodigo: codigo ? codeDiscount : null,
         total: totalFinal,
@@ -184,6 +217,10 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     setDeliveryMethod(null);
     setCustomerName("");
     setCoords(null);
+    setDireccionPin(null);
+    setReferencias("");
+    setManual(false);
+    setDireccionManual("");
     setSendError(null);
   };
 
@@ -194,11 +231,19 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     onClose();
   };
 
+  const handleGoToPayment = () => {
+    handleFinish();
+    // Espera a que se cierre el panel para bajar a los datos de pago.
+    window.setTimeout(() => {
+      document.getElementById("pago")?.scrollIntoView({ behavior: "smooth" });
+    }, 250);
+  };
+
   const canSend =
     items.length > 0 &&
     !!customerName.trim() &&
     !!deliveryMethod &&
-    (isPickup || (!!coords && !!envio)) &&
+    (isPickup || (manual ? direccionManualOk : !!coords && !!envio)) &&
     !sending;
 
   const productoEnEdicion = editingItem
@@ -405,7 +450,13 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   </div>
                 </div>
 
-                <div className="mt-5 grid gap-3">
+                {items.length > 0 && (
+                  <div className="mt-3">
+                    <DiscountCodeBox compact />
+                  </div>
+                )}
+
+                <div className="mt-4 grid gap-3">
                   <button
                     type="button"
                     disabled={!items.length}
@@ -472,6 +523,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     >
                       Abrir WhatsApp
                     </a>
+
+                    <button
+                      type="button"
+                      onClick={handleGoToPayment}
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 font-black text-white transition hover:bg-pink-600"
+                    >
+                      <CreditCard size={19} />
+                      Ver datos para transferencia
+                    </button>
 
                     <button
                       type="button"
@@ -560,42 +620,97 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <h4 className="font-black text-slate-900">
                           Tu ubicación
                         </h4>
-                        <p className="mb-3 mt-1 text-sm text-slate-600">
-                          Así no tienes que mandárnosla por WhatsApp.
-                        </p>
 
-                        <LocationPicker
-                          value={coords}
-                          onChange={setCoords}
-                          ruta={envio?.linea}
-                        />
+                        {manual ? (
+                          <>
+                            <p className="mb-3 mt-1 text-sm text-slate-600">
+                              Escribe tu dirección con referencias. Te
+                              confirmamos el costo de envío por WhatsApp.
+                            </p>
+                            <textarea
+                              value={direccionManual}
+                              onChange={(event) =>
+                                setDireccionManual(event.target.value)
+                              }
+                              placeholder="Calle y número, colonia, entre qué calles, color de la casa…"
+                              rows={3}
+                              className="w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setManual(false)}
+                              className="mt-2 text-xs font-bold text-pink-600 underline"
+                            >
+                              Mejor marcarla en el mapa
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <p className="mb-3 mt-1 text-sm text-slate-600">
+                              Así no tienes que mandárnosla por WhatsApp.
+                            </p>
 
-                        {calculandoEnvio && (
-                          <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-500 ring-1 ring-orange-200">
-                            Calculando el envío por calles…
-                          </p>
+                            <LocationPicker
+                              value={coords}
+                              onChange={setCoords}
+                              ruta={envio?.linea}
+                              onAddress={setDireccionPin}
+                            />
+
+                            <label className="mt-4 block">
+                              <span className="text-sm font-black text-slate-900">
+                                Referencias{" "}
+                                <span className="font-bold text-slate-400">
+                                  (opcional)
+                                </span>
+                              </span>
+                              <input
+                                type="text"
+                                value={referencias}
+                                onChange={(event) =>
+                                  setReferencias(event.target.value)
+                                }
+                                placeholder="Ej. casa azul, portón negro, entre Hidalgo y Juárez"
+                                className="mt-2 w-full rounded-2xl border border-orange-200 bg-white p-3 font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100"
+                              />
+                            </label>
+
+                            {calculandoEnvio && (
+                              <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-500 ring-1 ring-orange-200">
+                                Calculando el envío por calles…
+                              </p>
+                            )}
+
+                            {envio && (
+                              <p
+                                className={`mt-3 rounded-2xl px-4 py-3 text-sm font-black ${
+                                  costoEnvio === 0
+                                    ? "bg-emerald-50 text-emerald-700"
+                                    : "bg-white text-slate-700 ring-1 ring-orange-200"
+                                }`}
+                              >
+                                Estás a {formatKm(envio.km)}
+                                {envio.aprox ? " aprox." : ""} del local por calle ·{" "}
+                                {envio.dentro
+                                  ? "dentro de la zona, ¡envío gratis! 🎉"
+                                  : `fuera de la zona, envío ${formatPrice(costoEnvio)}`}
+                              </p>
+                            )}
+                            <p className="mt-2 text-xs font-semibold text-slate-500">
+                              Gratis dentro de la zona rosa. Fuera de ella,{" "}
+                              {formatPrice(COSTO_POR_KM)} por km de ruta desde el local
+                              (por medio km, {formatPrice(COSTO_POR_KM / 2)}).
+                            </p>
+
+                            <button
+                              type="button"
+                              onClick={() => setManual(true)}
+                              className="mt-3 text-xs font-bold text-slate-500 underline hover:text-pink-600"
+                            >
+                              ¿No puedes marcar tu ubicación? Escribe tu dirección
+                            </button>
+                          </>
                         )}
-
-                        {envio && (
-                          <p
-                            className={`mt-3 rounded-2xl px-4 py-3 text-sm font-black ${
-                              costoEnvio === 0
-                                ? "bg-emerald-50 text-emerald-700"
-                                : "bg-white text-slate-700 ring-1 ring-orange-200"
-                            }`}
-                          >
-                            Estás a {formatKm(envio.km)}
-                            {envio.aprox ? " aprox." : ""} del local por calle ·{" "}
-                            {envio.dentro
-                              ? "dentro de la zona, ¡envío gratis! 🎉"
-                              : `fuera de la zona, envío ${formatPrice(costoEnvio)}`}
-                          </p>
-                        )}
-                        <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Gratis dentro de la zona rosa. Fuera de ella,{" "}
-                          {formatPrice(COSTO_POR_KM)} por km de ruta desde el local
-                          (por medio km, {formatPrice(COSTO_POR_KM / 2)}).
-                        </p>
                       </div>
                     )}
                   </div>
@@ -637,7 +752,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           ? "—"
                           : isPickup
                             ? "Sin costo"
-                            : calculandoEnvio
+                            : manual
+                              ? "Por confirmar"
+                              : calculandoEnvio
                               ? "Calculando…"
                               : !envio
                               ? "Marca tu ubicación"
