@@ -244,61 +244,149 @@ function App() {
         <ScheduleSection />
         <ShippingSection />
 
-        <section id="contacto" className="bg-white py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section id="contacto" className="relative overflow-x-clip py-20 sm:py-24">
+          <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-pink-200/40 blur-3xl" />
+          <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-orange-200/40 blur-3xl" />
+
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mb-10 text-center">
-              <p className="text-sm font-black uppercase tracking-[.22em] text-pink-600">
-                Estamos cerca
+              <p className="soft-heading text-base font-extrabold tracking-[.08em] text-pink-500">
+                Estamos cerca 💕
               </p>
-              <h2 className="mt-2 text-3xl font-black text-slate-900 sm:text-4xl">
-                Contacta a CHAROLAS LOCAS
+              <h2 className="soft-heading mt-1 text-4xl font-black leading-tight text-rose-950 sm:text-5xl">
+                ¿Se te antojó? Contáctanos
               </h2>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  label: "Llámanos",
-                  value: config.displayPhone,
-                  href: `tel:${config.phone}`,
-                  Icon: Phone,
-                },
-                {
-                  label: "WhatsApp",
-                  value: "Arma tu pedido",
-                  href: whatsappUrl(),
-                  Icon: MessageCircle,
-                },
-                {
-                  label: "Instagram",
-                  value: "@las_charolas_locas",
-                  href: config.instagram,
-                  Icon: Camera,
-                },
-                {
-                  label: "Ubicación",
-                  value: "Abrir Google Maps",
-                  href: config.maps,
-                  Icon: MapPin,
-                },
-              ].map(({ label, value, href, Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="rounded-3xl border border-pink-100 bg-gradient-to-b from-white to-pink-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
-                >
-                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-pink-100 text-pink-600">
-                    <Icon size={22} />
-                  </div>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:grid-rows-2">
+              {/* WhatsApp: lo principal */}
+              <a
+                href={whatsappUrl()}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex min-h-[19rem] flex-col justify-between overflow-hidden rounded-[2rem] bg-gradient-to-br from-pink-600 via-rose-500 to-orange-400 p-7 text-white shadow-xl shadow-pink-200 transition hover:-translate-y-1 col-span-2 lg:row-span-2 sm:p-9"
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-60"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(rgba(255,255,255,.2) 1.4px, transparent 1.6px)",
+                    backgroundSize: "16px 16px",
+                  }}
+                />
+                <img
+                  src="/menu-3d/fresa.webp"
+                  alt=""
+                  loading="lazy"
+                  className="pointer-events-none absolute -bottom-6 -right-4 w-44 rotate-12 drop-shadow-[0_18px_22px_rgba(0,0,0,.25)] transition duration-500 group-hover:rotate-3 group-hover:scale-110 sm:w-56"
+                />
+                <img
+                  src="/menu-3d/frappe.webp"
+                  alt=""
+                  loading="lazy"
+                  className="pointer-events-none absolute bottom-7 right-48 hidden w-20 -rotate-12 drop-shadow-[0_10px_12px_rgba(0,0,0,.2)] transition duration-500 group-hover:-translate-y-2 sm:block sm:right-56"
+                />
 
-                  <p className="mt-5 text-lg font-black">{label}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-500">
-                    {value}
+                <div className="relative">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-xs font-black uppercase tracking-wider backdrop-blur">
+                    <MessageCircle size={14} />
+                    WhatsApp
+                  </span>
+                  <h3 className="soft-heading mt-4 max-w-xs text-4xl font-black leading-[.95] sm:text-5xl">
+                    Pide o pregunta lo que quieras
+                  </h3>
+                  <p className="mt-3 max-w-xs font-semibold text-white/85">
+                    Te respondemos rapidito. También puedes armar tu pedido en el
+                    menú y llega directo aquí.
                   </p>
-                </a>
-              ))}
+                </div>
+
+                <span className="relative mt-6 inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-5 py-3.5 font-black text-pink-600 shadow-lg transition group-hover:gap-3">
+                  Escríbenos
+                  <ArrowRight size={18} />
+                </span>
+              </a>
+
+              {/* Instagram */}
+              <a
+                href={config.instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative flex min-h-[9.5rem] items-center justify-between gap-4 overflow-hidden rounded-[2rem] bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400 p-6 text-white shadow-lg shadow-fuchsia-200 transition hover:-translate-y-1 col-span-2"
+              >
+                <div className="relative">
+                  <p className="text-xs font-black uppercase tracking-wider text-white/75">
+                    Síguenos
+                  </p>
+                  <p className="soft-heading mt-1 text-2xl font-black leading-tight sm:text-3xl">
+                    @las_charolas_locas
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white/85">
+                    Promos, novedades y antojos diarios ✨
+                  </p>
+                </div>
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white/20 backdrop-blur transition group-hover:rotate-6 group-hover:scale-110">
+                  <Camera size={26} />
+                </span>
+              </a>
+
+              {/* Ubicación */}
+              <a
+                href={config.maps}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex min-h-[9.5rem] flex-col justify-between rounded-[2rem] bg-white p-5 sm:p-6 shadow-[0_10px_30px_rgba(236,72,153,0.10)] ring-1 ring-pink-100 transition hover:-translate-y-1 hover:ring-pink-200"
+              >
+                <div className="flex items-start justify-between">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-pink-100 text-pink-600 transition group-hover:bg-pink-600 group-hover:text-white">
+                    <MapPin size={22} />
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black ${
+                      status.open
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        status.open ? "bg-emerald-500" : "bg-slate-400"
+                      }`}
+                    />
+                    {status.open ? "Abierto" : "Cerrado"}
+                  </span>
+                </div>
+                <div>
+                  <p className="soft-heading mt-4 text-xl font-black text-rose-950">
+                    Visítanos
+                  </p>
+                  <p className="inline-flex items-center gap-1 text-sm font-bold text-pink-600">
+                    Cómo llegar
+                    <ArrowRight
+                      size={15}
+                      className="transition group-hover:translate-x-1"
+                    />
+                  </p>
+                </div>
+              </a>
+
+              {/* Teléfono */}
+              <a
+                href={`tel:${config.phone}`}
+                className="group flex min-h-[9.5rem] flex-col justify-between rounded-[2rem] bg-slate-950 p-5 sm:p-6 text-white shadow-lg shadow-slate-300 transition hover:-translate-y-1"
+              >
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-pink-300 transition group-hover:bg-pink-500 group-hover:text-white">
+                  <Phone size={22} />
+                </span>
+                <div>
+                  <p className="mt-4 text-xs font-black uppercase tracking-wider text-slate-400">
+                    Llámanos
+                  </p>
+                  <p className="soft-heading whitespace-nowrap text-base font-black sm:text-xl sm:tracking-wide">
+                    {config.displayPhone}
+                  </p>
+                </div>
+              </a>
             </div>
           </div>
         </section>
