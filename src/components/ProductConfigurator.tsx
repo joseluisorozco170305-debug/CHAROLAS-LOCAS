@@ -20,12 +20,15 @@ interface ProductConfiguratorProps {
   product: MenuProduct;
   onClose: () => void;
   editingItem?: CartItem;
+  /** Modo local: en el establecimiento no se vende alcohol (solo S/A). */
+  sinAlcohol?: boolean;
 }
 
 export function ProductConfigurator({
   product,
   onClose,
   editingItem,
+  sinAlcohol = false,
 }: ProductConfiguratorProps) {
   const [configuration, setConfiguration] = useState(() => {
     if (editingItem) {
@@ -193,6 +196,8 @@ export function ProductConfigurator({
 
             // Mojitos: selector chiquito S/A · C/A, sin llamar la atención.
             if (group.id === MOJITO_GROUP_ID) {
+              if (sinAlcohol) return null;
+
               return (
                 <section key={group.id} className="flex flex-wrap items-center gap-2">
                   {group.options.map((option) => {

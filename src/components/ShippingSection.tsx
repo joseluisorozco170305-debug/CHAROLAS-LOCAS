@@ -1,85 +1,114 @@
-import { MapPin, ShoppingBag, Truck } from "lucide-react";
+import { Clock, MapPinned, Store } from "lucide-react";
 import { COSTO_POR_KM, costoFueraDeZona } from "../data/envio";
+import { formatPrice } from "../utils/formatPrice";
+import { BentoSection, Dots, Ilustracion, SectionHeading } from "./Bento";
 
-const tarifas = [
-  { id: "pickup", zone: "Pick up · Recoger en el local", cost: 0 },
-  { id: "gratis", zone: "Dentro de nuestra zona de reparto", cost: 0 },
-  ...[2, 2.5, 3, 4, 5].map((km) => ({
-    id: `km-${km}`,
-    zone: `Fuera de zona · ${km} km del local`,
-    cost: costoFueraDeZona(km),
-  })),
-]
+const ejemplos = [2, 2.5, 3, 4, 5].map((km) => ({
+  km,
+  costo: costoFueraDeZona(km),
+}));
 
 export function ShippingSection() {
   return (
-    <section id="envios" className="bg-white py-20">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-200">
-            <Truck size={26} />
+    <BentoSection id="envios">
+      <SectionHeading
+        kicker="Entregas 🛵"
+        title="¿Cuánto cuesta el envío?"
+        subtitle="Pide a domicilio o recoge en el local. Al marcar tu ubicación, el envío se calcula solito."
+      />
+
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:grid-rows-2">
+        {/* Zona gratis */}
+        <div className="relative col-span-2 flex min-h-[17rem] flex-col justify-between overflow-hidden rounded-[2rem] bg-gradient-to-br from-pink-500 via-fuchsia-500 to-violet-500 p-7 text-white shadow-xl shadow-pink-200 sm:p-9 lg:row-span-2">
+          <Dots />
+          <Ilustracion
+            nombre="papas"
+            className="-bottom-6 -right-4 w-40 rotate-12 sm:w-52"
+          />
+
+          <span className="relative inline-flex w-fit items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-xs font-black uppercase tracking-wider backdrop-blur">
+            <MapPinned size={14} />
+            Zona rosa del mapa
+          </span>
+
+          <div className="relative max-w-xs">
+            <p className="soft-heading text-5xl font-black leading-[.9] sm:text-6xl">
+              Envío gratis
+            </p>
+            <p className="mt-3 font-semibold text-white/85">
+              Si estás dentro de nuestra zona de reparto, el envío va por
+              nuestra cuenta. 💕
+            </p>
+          </div>
+        </div>
+
+        {/* Fuera de zona */}
+        <div className="col-span-2 rounded-[2rem] bg-white p-5 shadow-[0_10px_30px_rgba(236,72,153,0.10)] ring-1 ring-pink-100 sm:p-6">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[.18em] text-orange-500">
+                Fuera de la zona
+              </p>
+              <p className="soft-heading mt-1 text-3xl font-black text-rose-950">
+                {formatPrice(COSTO_POR_KM)}
+                <span className="text-lg text-rose-950/50"> por km</span>
+              </p>
+            </div>
+            <p className="pb-1 text-right text-xs font-bold text-slate-400">
+              medio km = {formatPrice(COSTO_POR_KM / 2)}
+            </p>
           </div>
 
-          <p className="mt-5 text-sm font-black uppercase tracking-[.22em] text-orange-500">
-            Entregas
-          </p>
-
-          <h2 className="mt-2 text-3xl font-black text-slate-900 sm:text-4xl">
-            Costos de envío
-          </h2>
-
-          <p className="mt-3 text-slate-600">
-            Puedes pedir envío a domicilio o seleccionar Pick up para recoger
-            tu pedido directamente en el local.
-          </p>
-        </div>
-
-        <div className="overflow-hidden rounded-3xl border border-pink-100 bg-pink-50/40 shadow-xl shadow-pink-100/50">
-          {tarifas.map((item, index) => (
-            <div
-              key={item.id}
-              className={`flex items-center justify-between gap-4 px-5 py-4 sm:px-7 ${
-                index !== tarifas.length - 1
-                  ? "border-b border-pink-100"
-                  : ""
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-pink-600 shadow-sm">
-                  {item.id === "pickup" ? (
-                    <ShoppingBag size={18} />
-                  ) : (
-                    <MapPin size={18} />
-                  )}
-                </div>
-
-                <strong className="text-slate-800">{item.zone}</strong>
-              </div>
-
-              <span
-                className={`shrink-0 rounded-full px-3 py-1 text-sm font-black ${
-                  item.cost === 0
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-white text-pink-700 ring-1 ring-pink-100"
-                }`}
+          <div className="mt-4 grid grid-cols-5 gap-1.5">
+            {ejemplos.map(({ km, costo }) => (
+              <div
+                key={km}
+                className="rounded-xl bg-orange-50 px-1 py-2 text-center ring-1 ring-orange-100"
               >
-                {item.cost === 0 ? "Sin costo" : `$${item.cost}`}
-              </span>
-            </div>
-          ))}
+                <p className="text-[11px] font-bold text-orange-700/70">
+                  {km} km
+                </p>
+                <p className="font-black text-orange-700">{formatPrice(costo)}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-5 rounded-2xl bg-orange-50 p-4 text-center text-sm font-semibold text-orange-800">
-          Fuera de la zona se cobran ${COSTO_POR_KM} por cada kilómetro de ruta
-          desde el local (${COSTO_POR_KM / 2} por medio km). Al marcar tu
-          ubicación verás la zona y la ruta en el mapa, y el envío se suma
-          solito a tu total.
+        {/* Pick up */}
+        <div className="flex min-h-[9.5rem] flex-col justify-between rounded-[2rem] bg-white p-5 shadow-[0_10px_30px_rgba(236,72,153,0.10)] ring-1 ring-pink-100 sm:p-6">
+          <div className="flex items-start justify-between">
+            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-pink-100 text-pink-600">
+              <Store size={22} />
+            </span>
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+              Gratis
+            </span>
+          </div>
+          <div>
+            <p className="soft-heading mt-4 text-xl font-black text-rose-950">
+              Pick up
+            </p>
+            <p className="text-sm font-semibold text-slate-500">
+              Recoge en el local
+            </p>
+          </div>
         </div>
 
-        <p className="mt-5 text-center text-sm font-semibold text-slate-500">
-          Todas nuestras charolas se elaboran al momento. Agradecemos tu paciencia.
-        </p>
+        {/* Al momento */}
+        <div className="flex min-h-[9.5rem] flex-col justify-between rounded-[2rem] bg-slate-950 p-5 text-white shadow-lg shadow-slate-300 sm:p-6">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-pink-300">
+            <Clock size={22} />
+          </span>
+          <div>
+            <p className="soft-heading mt-4 text-xl font-black leading-tight">
+              Todo al momento
+            </p>
+            <p className="text-sm font-semibold text-slate-400">
+              Gracias por tu paciencia
+            </p>
+          </div>
+        </div>
       </div>
-    </section>
+    </BentoSection>
   );
 }

@@ -111,12 +111,19 @@ export interface CategoriaItem {
 export function CategoryGrid({
   items,
   onSelect,
+  compact = false,
 }: {
   items: CategoriaItem[];
   onSelect: (id: string) => void;
+  /** Modo local: el menú comparte pantalla con el carrito, va más angosto. */
+  compact?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+    <div
+      className={`grid grid-cols-2 gap-3 sm:gap-5 ${
+        compact ? "xl:grid-cols-3" : "lg:grid-cols-3 lg:gap-6"
+      }`}
+    >
       {items.map((item) => {
         const portada = portadaDe(item.id);
         const [principal, secundaria] = portada.imagenes;
@@ -202,11 +209,14 @@ export function CategoryRail({
   active,
   onSelect,
   onBack,
+  stickyTop = "top-20",
 }: {
   items: CategoriaItem[];
   active: string;
   onSelect: (id: string) => void;
   onBack: () => void;
+  /** Clase de Tailwind según el alto del header (top-20 tienda, top-16 local). */
+  stickyTop?: string;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const activeTitle = items.find((item) => item.id === active)?.nombre ?? "";
@@ -225,7 +235,7 @@ export function CategoryRail({
 
   return (
     <>
-      <div className="sticky top-20 z-30 -mx-4 mb-6 border-b border-pink-100 bg-[#fff9fc]/90 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className={`sticky ${stickyTop} z-30 -mx-4 mb-6 border-b border-pink-100 bg-[#fff9fc]/90 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8`}>
         <div
           ref={railRef}
           className="menu-scroll flex gap-1 overflow-x-auto py-3 sm:justify-center"

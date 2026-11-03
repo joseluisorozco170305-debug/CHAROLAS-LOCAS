@@ -350,10 +350,13 @@ export function LocalPedidos() {
   const [error, setError] = useState<string | null>(null);
   const [pedidoListo, setPedidoListo] = useState<number | null>(null);
   const [cuenta, setCuenta] = useState(SEGUNDOS_PANTALLA_FINAL);
+  /** Cambia con cada cliente para que el menú vuelva a la vista de categorías. */
+  const [turno, setTurno] = useState(0);
 
   const nuevoPedido = useCallback(() => {
     setPedidoListo(null);
     setError(null);
+    setTurno((t) => t + 1);
     window.scrollTo({ top: 0 });
   }, []);
 
@@ -449,7 +452,7 @@ export function LocalPedidos() {
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px]">
         <main className="pb-28 lg:pb-0">
-          <MenuSection compact />
+          <MenuSection compact key={turno} />
         </main>
 
         {/* Tablet horizontal / pantalla grande: carrito siempre visible */}
@@ -537,6 +540,7 @@ export function LocalPedidos() {
           product={productoEnEdicion}
           editingItem={editando}
           onClose={() => setEditando(null)}
+          sinAlcohol
         />
       )}
 

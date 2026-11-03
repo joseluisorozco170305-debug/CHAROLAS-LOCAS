@@ -10,6 +10,8 @@ interface ProductCardProps {
   onCustomize: (product: MenuProduct) => void;
   favorite: boolean;
   onToggleFavorite: (productId: string) => void;
+  /** En el modo local (tablet compartida) se esconde el corazón. */
+  showFavorite?: boolean;
 }
 
 const startingPrice = (product: MenuProduct) =>
@@ -80,6 +82,7 @@ export function ProductCard({
   onCustomize,
   favorite,
   onToggleFavorite,
+  showFavorite = true,
 }: ProductCardProps) {
   const normalPrice = startingPrice(product);
   const finalPrice = discountedPrice(normalPrice, product.categoryId);
@@ -109,7 +112,7 @@ export function ProductCard({
           {emoji}
         </div>
 
-        <div className="min-w-0 flex-1 pr-10">
+        <div className={`min-w-0 flex-1 ${showFavorite ? "pr-10" : ""}`}>
           {(product.popular || product.featured || discount > 0) && (
             <div className="mb-1.5 flex flex-wrap gap-1.5">
               {discount > 0 && (
@@ -138,6 +141,7 @@ export function ProductCard({
         </div>
       </div>
 
+      {showFavorite && (
       <button
         type="button"
         aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
@@ -151,6 +155,7 @@ export function ProductCard({
       >
         <Heart size={17} fill={favorite ? "currentColor" : "none"} />
       </button>
+      )}
 
       <p className="pointer-events-none relative mt-3 flex-1 text-sm leading-6 text-rose-950/65">
         {product.description}

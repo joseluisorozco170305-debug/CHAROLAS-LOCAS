@@ -1,8 +1,4 @@
-import {
-  Heart,
-  Search,
-  X,
-} from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { categorias } from "../data/categorias";
 import { useFavorites } from "../hooks/useFavorites";
@@ -78,7 +74,7 @@ const productSearchText = (product: MenuProduct) => {
 export function MenuSection({ compact = false }: { compact?: boolean }) {
   const { menu, cargando } = useMenuConPreciosEstado();
   // "inicio" = cuadrícula de categorías (vista principal del menú).
-  const [category, setCategory] = useState(compact ? "todos" : "inicio");
+  const [category, setCategory] = useState("inicio");
   const [drinkSection, setDrinkSection] = useState("frappes");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] =
@@ -150,7 +146,8 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
   const categoryItems = useMemo<CategoriaItem[]>(
     () => [
       { id: "todos", nombre: "Todo el menú", cantidad: menu.length },
-      ...(favoriteIds.length > 0
+      // En el modo local (tablet compartida) no se usan favoritos.
+      ...(!compact && favoriteIds.length > 0
         ? [
             {
               id: "favoritos",
@@ -165,7 +162,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
         cantidad: menu.filter((p) => p.categoryId === item.id).length,
       })),
     ],
-    [menu, favoriteIds, visibleCategories],
+    [menu, favoriteIds, visibleCategories, compact],
   );
 
   const scrollTo = (id: string) =>
@@ -186,7 +183,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
     scrollTo("menu-vista");
   };
 
-  const showCategoryGrid = !compact && category === "inicio" && !normalizedSearch;
+  const showCategoryGrid = category === "inicio" && !normalizedSearch;
 
   return (
     <section
@@ -269,67 +266,14 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
 
         <div id="menu-vista" className="scroll-mt-24" />
 
-        {!compact && category !== "inicio" && (
+        {category !== "inicio" && (
           <CategoryRail
             items={categoryItems}
             active={category}
             onSelect={openCategory}
             onBack={backToCategories}
+            stickyTop={compact ? "top-16" : "top-20"}
           />
-        )}
-
-        {compact && (
-        <div className="menu-scroll mb-10 flex gap-2.5 overflow-x-auto pb-3">
-          <button
-            type="button"
-            onClick={() => setCategory("todos")}
-            className={`shrink-0 rounded-full px-5 py-3 text-sm font-black ${
-              category === "todos"
-                ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
-                : "bg-white/90 text-rose-950/70 ring-1 ring-pink-100 hover:bg-pink-50"
-            }`}
-          >
-            ✨ Todos
-          </button>
-
-          {favoriteIds.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setCategory("favoritos")}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-black ${
-                category === "favoritos"
-                  ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
-                  : "bg-white/90 text-pink-500 ring-1 ring-pink-100 hover:bg-pink-50"
-              }`}
-            >
-              <Heart
-                size={16}
-                fill={category === "favoritos" ? "currentColor" : "none"}
-              />
-              Mis favoritos
-            </button>
-          )}
-
-          {visibleCategories.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => {
-                setCategory(item.id);
-                if (item.id === "bebidas") {
-                  setDrinkSection("frappes");
-                }
-              }}
-              className={`shrink-0 rounded-full px-5 py-3 text-sm font-black ${
-                category === item.id
-                  ? "bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-200"
-                  : "bg-white/90 text-rose-950/70 ring-1 ring-pink-100 hover:bg-pink-50"
-              }`}
-            >
-              {item.icono} {item.nombre}
-            </button>
-          ))}
-        </div>
         )}
 
         {category === "bebidas" && (
@@ -364,7 +308,11 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
         )}
 
         {showCategoryGrid ? (
-          <CategoryGrid items={categoryItems} onSelect={openCategory} />
+          <CategoryGrid
+            items={categoryItems}
+            onSelect={openCategory}
+            compact={compact}
+          />
         ) : cargando ? (
           <div
             role="status"
@@ -391,6 +339,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
                 onCustomize={setSelectedProduct}
                 favorite={isFavorite(product.id)}
                 onToggleFavorite={toggleFavorite}
+                showFavorite={!compact}
               />
             ))}
           </div>
@@ -414,7 +363,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
           </div>
         )}
 
-        {category === "bebidas" && drinkSection === "drinks" && (
+        {!compact && category === "bebidas" && drinkSection === "drinks" && (
           <p className="mt-8 text-center text-[11px] font-semibold leading-5 text-slate-400">
             S/A: precio publicado · C/A: +$20, solo a domicilio y +18 · En el
             local no se vende alcohol ni se permite entrar con bebidas
@@ -429,6 +378,7 @@ export function MenuSection({ compact = false }: { compact?: boolean }) {
         <ProductConfigurator
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
+          sinAlcohol={compact}
         />
       )}
     </section>
