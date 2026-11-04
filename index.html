@@ -19,4 +19,64 @@
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <!-- ...todo lo demás sigue igual... -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- SEO y vista previa al compartir: lo llena vite.config.ts según la ruta (src/shell/seo.ts) -->
+    <!--seo:start-->
+    <!--seo:end-->
+
+    <style>
+      /* Pantalla de carga: se ve al instante, antes de que cargue la app */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 80% 10%, #ffedd5 0, transparent 40%),
+          radial-gradient(circle at 15% 90%, #fce7f3 0, transparent 45%), #fff8fb;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+      }
+      #splash.oculto { opacity: 0; visibility: hidden; }
+      #splash .caja { text-align: center; font-family: system-ui, sans-serif; }
+      #splash img {
+        width: 112px; height: 112px; border-radius: 28px;
+        box-shadow: 0 18px 40px rgba(219, 39, 119, 0.25);
+        animation: latido 1.2s ease-in-out infinite;
+      }
+      #splash .barra {
+        width: 140px; height: 6px; margin: 26px auto 0; border-radius: 99px;
+        background: #fce7f3; overflow: hidden;
+      }
+      #splash .barra::after {
+        content: ""; display: block; width: 40%; height: 100%; border-radius: 99px;
+        background: linear-gradient(90deg, #db2777, #f97316);
+        animation: barra 1s ease-in-out infinite;
+      }
+      #splash p { margin-top: 14px; font-weight: 800; color: #be185d; font-size: 14px; letter-spacing: .04em; }
+      @keyframes latido { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      @keyframes barra { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+      @media (prefers-reduced-motion: reduce) {
+        #splash img, #splash .barra::after { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="splash" role="status" aria-label="Cargando Charolas Locas">
+      <div class="caja">
+        <img src="/logo-256.jpg" alt="" />
+        <div class="barra"></div>
+        <p>Preparando tus antojos…</p>
+      </div>
+    </div>
+    <noscript>
+      <p style="padding:24px;text-align:center;font-family:system-ui,sans-serif">
+        Para ver el menú de Charolas Locas y hacer pedidos, necesitas habilitar JavaScript en tu navegador.
+      </p>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>   
